@@ -3,44 +3,34 @@ package com.example.utilityapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.utilityapp.ui.theme.UtilityAppTheme
+import com.example.utilityapp.composables.NotesAppUI
+import com.example.utilityapp.data.AppDatabase
+import com.example.utilityapp.data.CategoryDao
+import com.example.utilityapp.data.NoteDao
 
 class MainActivity : ComponentActivity() {
+    // Data Access Objects
+    private lateinit var noteDao: NoteDao
+    private lateinit var categoryDao: CategoryDao
+
+    /**
+     * The main activity for the notes app.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize the AppDatabase and get the NoteDao instance
+        val appDatabase = AppDatabase.getDatabase(applicationContext)
+        noteDao = appDatabase.noteDao()
+        categoryDao = appDatabase.categoryDao()
+
+        // Set the content view with NotesAppUI
         setContent {
-            UtilityAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
-            }
+            // pass the DAO's to the UI for further use.
+            NotesAppUI(
+                noteDao = noteDao,
+                categoryDao = categoryDao,
+            )
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    UtilityAppTheme {
-        Greeting("Android")
     }
 }
