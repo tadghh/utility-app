@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
@@ -22,6 +24,9 @@ import androidx.compose.material.ExposedDropdownMenuDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -111,6 +116,11 @@ fun NotesAppUI(
     noteDao: NoteDao,
     categoryDao: CategoryDao,
 ) {
+    var selectedTabIndex by remember { mutableStateOf(0) } // to track the selected tab index
+
+    // Define the tabs for bottom navigation
+    val tabs = listOf("Notes", "New Functionality")
+
     // Starts off as an empty list till the state is updated later on.
     val notesList = noteDao.getAllNotes().observeAsState(emptyList())
 
@@ -174,85 +184,117 @@ fun NotesAppUI(
                 }
             }
         }
-        if (isCreatingNote) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-            )
-            {
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                    )
-                    {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.White)
-                        ) {
-                            // Show the note creation screen when isCreatingNote is true
-                            NoteCreationScreen(
-                                note = selectedNote,
-                                onNoteCreated = { newNote ->
-                                    val note = Note(
-                                        title = newNote.title,
-                                        content = newNote.content,
-                                        categoryId = newNote.categoryId
-                                    )
-
-                                    GlobalScope.launch(Dispatchers.Main) { noteDao.insert(note) }
-                                    selectedNote = null
-                                    isCreatingNote = false
-                                },
-                                onNoteEdited = { editNote ->
-                                    GlobalScope.launch(Dispatchers.Main) { noteDao.update(editNote) }
-                                    selectedNote = null
-                                    isCreatingNote = false
-                                },
-                                onCancel = {
-                                    selectedNote = null
-                                    isCreatingNote = false
-                                },
-                                onDelete = { noteToDelete ->
-                                    GlobalScope.launch(Dispatchers.Main) { noteDao.delete(noteToDelete) }
-                                    selectedNote = null
-                                    isCreatingNote = false
-                                },
-                                categories = categoryDao.getAllCategories(),
-                            )
-                        }
-                    }
-                }
-            }
-        }
-        if (isCreatingCategory) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-            ) {
-                CategorySelectionScreen(
-                    categories = categoryDao.getAllCategories(),
-                    onCategoryCreated = { categoryName ->
-                        val category = Category(name = categoryName)
-                        GlobalScope.launch(Dispatchers.Main) { categoryDao.insert(category) }
-                    },
-                    onCategoryDeleted = { categoryId ->
-                        if (categoryId != null) {
-                            GlobalScope.launch(Dispatchers.IO) { categoryDao.delete(categoryId) }
+        // Bottom Navigation
+        BottomNavigation(
+            modifier = Modifier.fillMaxWidth(),
+            backgroundColor = MaterialTheme.colors.primary,
+            contentColor = Color.White,
+            elevation = 8.dp
+        ) {
+            tabs.forEachIndexed { index, title ->
+                BottomNavigationItem(
+                    icon = {
+                        when (index) {
+                            0 -> Icons.Default.Home // "Note" icon for the left tab
+                            1 -> Icons.Default.Search // "Weather" icon for the right tab
                         }
                     },
-                    onCancel = {
-                        isCreatingCategory = false
-                        isCreatingNote = false
+                    label = { Text(text = title) },
+                    selected = selectedTabIndex == index,
+                    onClick = {
+                        selectedTabIndex = index
                     }
                 )
             }
         }
+
+        when(selectedTabIndex) {
+            0 -> {
+                if (isCreatingNote) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White)
+                    )
+                    {
+                        Column(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            )
+                            {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.White)
+                                ) {
+                                    // Show the note creation screen when isCreatingNote is true
+                                    NoteCreationScreen(
+                                        note = selectedNote,
+                                        onNoteCreated = { newNote ->
+                                            val note = Note(
+                                                title = newNote.title,
+                                                content = newNote.content,
+                                                categoryId = newNote.categoryId
+                                            )
+
+                                            GlobalScope.launch(Dispatchers.Main) { noteDao.insert(note) }
+                                            selectedNote = null
+                                            isCreatingNote = false
+                                        },
+                                        onNoteEdited = { editNote ->
+                                            GlobalScope.launch(Dispatchers.Main) { noteDao.update(editNote) }
+                                            selectedNote = null
+                                            isCreatingNote = false
+                                        },
+                                        onCancel = {
+                                            selectedNote = null
+                                            isCreatingNote = false
+                                        },
+                                        onDelete = { noteToDelete ->
+                                            GlobalScope.launch(Dispatchers.Main) { noteDao.delete(noteToDelete) }
+                                            selectedNote = null
+                                            isCreatingNote = false
+                                        },
+                                        categories = categoryDao.getAllCategories(),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                if (isCreatingCategory) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White)
+                    ) {
+                        CategorySelectionScreen(
+                            categories = categoryDao.getAllCategories(),
+                            onCategoryCreated = { categoryName ->
+                                val category = Category(name = categoryName)
+                                GlobalScope.launch(Dispatchers.Main) { categoryDao.insert(category) }
+                            },
+                            onCategoryDeleted = { categoryId ->
+                                if (categoryId != null) {
+                                    GlobalScope.launch(Dispatchers.IO) { categoryDao.delete(categoryId) }
+                                }
+                            },
+                            onCancel = {
+                                isCreatingCategory = false
+                                isCreatingNote = false
+                            }
+                        )
+                    }
+                }
+            }
+            1 -> {
+
+            }
+        }
+
     }
 }
 
