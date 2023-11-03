@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -119,7 +120,7 @@ fun NotesAppUI(
     var selectedTabIndex by remember { mutableStateOf(0) } // to track the selected tab index
 
     // Define the tabs for bottom navigation
-    val tabs = listOf("Notes", "New Functionality")
+    val tabs = listOf("Notes", "Weather")
 
     // Starts off as an empty list till the state is updated later on.
     val notesList = noteDao.getAllNotes().observeAsState(emptyList())
@@ -130,172 +131,248 @@ fun NotesAppUI(
     var selectedNote: Note? by remember { mutableStateOf(null) }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.fillMaxSize()
+        Column(modifier = Modifier.fillMaxSize()) {
+            when (selectedTabIndex) {
+                0 -> {
+                    NotesTab(noteDao = noteDao, categoryDao = categoryDao)
+                }
+
+                1 -> {
+                    WeatherTab()
+                }
+            }
+            // Bottom Navigation
+            BottomNavigation(
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = MaterialTheme.colors.primary,
+                contentColor = Color.White,
+                elevation = 8.dp
             ) {
-                // Title
-                Text(
-                    text = "My Notes",
-                    style = MaterialTheme.typography.h4,
-                    modifier = Modifier.padding(16.dp)
-                )
-
-                // LazyColumn to display notes
-                LazyColumn(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    // state updates here
-                    items(notesList) { note ->
-                        NoteItem(note = note)
-                        {
-                            selectedNote = note
-                            isCreatingNote = true
+                tabs.forEachIndexed { index, title ->
+                    BottomNavigationItem(
+                        icon = {
+                            when (index) {
+                                0 -> Icons.Default.Home // "Note" icon for the left tab
+                                1 -> Icons.Default.Search // "Weather" icon for the right tab
+                            }
+                        },
+                        label = { Text(text = title) },
+                        selected = selectedTabIndex == index,
+                        onClick = {
+                            selectedTabIndex = index
                         }
-                    }
-                }
-
-                // Button to add a new note
-                Button(
-                    onClick = {
-                        selectedNote = null // Clear the selected note
-                        isCreatingNote = true
-                        isCreatingCategory = false
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(text = "Add New Note")
-                }
-
-                // Button to add a new note
-                Button(
-                    onClick = {
-                        selectedNote = null // Clear the selected note
-                        isCreatingNote = false
-                        isCreatingCategory = true
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(text = "Add/delete Categories")
-                }
-            }
-        }
-        // Bottom Navigation
-        BottomNavigation(
-            modifier = Modifier.fillMaxWidth(),
-            backgroundColor = MaterialTheme.colors.primary,
-            contentColor = Color.White,
-            elevation = 8.dp
-        ) {
-            tabs.forEachIndexed { index, title ->
-                BottomNavigationItem(
-                    icon = {
-                        when (index) {
-                            0 -> Icons.Default.Home // "Note" icon for the left tab
-                            1 -> Icons.Default.Search // "Weather" icon for the right tab
-                        }
-                    },
-                    label = { Text(text = title) },
-                    selected = selectedTabIndex == index,
-                    onClick = {
-                        selectedTabIndex = index
-                    }
-                )
-            }
-        }
-
-        when(selectedTabIndex) {
-            0 -> {
-                if (isCreatingNote) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.White)
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun NotesTab(
+    noteDao: NoteDao,
+    categoryDao: CategoryDao,
+) {
+    // Starts off as an empty list till the state is updated later on.
+    val notesList = noteDao.getAllNotes().observeAsState(emptyList())
+
+    // State to track whether the user is creating a new note
+    var isCreatingNote by remember { mutableStateOf(false) }
+    var isCreatingCategory by remember { mutableStateOf(false) }
+    var selectedNote: Note? by remember { mutableStateOf(null) }
+
+        Column(
+            modifier = Modifier.height(705.dp)
+        ) {
+            // Title
+            Text(
+                text = "My Notes",
+                style = MaterialTheme.typography.h4,
+                modifier = Modifier.padding(16.dp)
+            )
+
+            // LazyColumn to display notes
+            LazyColumn(
+                modifier = Modifier.weight(1f)
+            ) {
+                // state updates here
+                items(notesList) { note ->
+                    NoteItem(note = note)
                     {
-                        Column(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Box(
+                        selectedNote = note
+                        isCreatingNote = true
+                    }
+                }
+            }
+
+            // Button to add a new note
+            Button(
+                onClick = {
+                    selectedNote = null // Clear the selected note
+                    isCreatingNote = true
+                    isCreatingCategory = false
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(text = "Add New Note")
+            }
+
+            // Button to add a new note
+            Button(
+                onClick = {
+                    selectedNote = null // Clear the selected note
+                    isCreatingNote = false
+                    isCreatingCategory = true
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(text = "Add/delete Categories")
+            }
+
+            if (isCreatingNote) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White)
+                )
+                {
+                    Column(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        )
+                        {
+                            Card(
                                 modifier = Modifier
                                     .fillMaxSize()
-                            )
-                            {
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .background(Color.White)
-                                ) {
-                                    // Show the note creation screen when isCreatingNote is true
-                                    NoteCreationScreen(
-                                        note = selectedNote,
-                                        onNoteCreated = { newNote ->
-                                            val note = Note(
-                                                title = newNote.title,
-                                                content = newNote.content,
-                                                categoryId = newNote.categoryId
-                                            )
+                                    .background(Color.White)
+                            ) {
+                                // Show the note creation screen when isCreatingNote is true
+                                NoteCreationScreen(
+                                    note = selectedNote,
+                                    onNoteCreated = { newNote ->
+                                        val note = Note(
+                                            title = newNote.title,
+                                            content = newNote.content,
+                                            categoryId = newNote.categoryId
+                                        )
 
-                                            GlobalScope.launch(Dispatchers.Main) { noteDao.insert(note) }
-                                            selectedNote = null
-                                            isCreatingNote = false
-                                        },
-                                        onNoteEdited = { editNote ->
-                                            GlobalScope.launch(Dispatchers.Main) { noteDao.update(editNote) }
-                                            selectedNote = null
-                                            isCreatingNote = false
-                                        },
-                                        onCancel = {
-                                            selectedNote = null
-                                            isCreatingNote = false
-                                        },
-                                        onDelete = { noteToDelete ->
-                                            GlobalScope.launch(Dispatchers.Main) { noteDao.delete(noteToDelete) }
-                                            selectedNote = null
-                                            isCreatingNote = false
-                                        },
-                                        categories = categoryDao.getAllCategories(),
-                                    )
-                                }
+                                        GlobalScope.launch(Dispatchers.Main) { noteDao.insert(note) }
+                                        selectedNote = null
+                                        isCreatingNote = false
+                                    },
+                                    onNoteEdited = { editNote ->
+                                        GlobalScope.launch(Dispatchers.Main) { noteDao.update(editNote) }
+                                        selectedNote = null
+                                        isCreatingNote = false
+                                    },
+                                    onCancel = {
+                                        selectedNote = null
+                                        isCreatingNote = false
+                                    },
+                                    onDelete = { noteToDelete ->
+                                        GlobalScope.launch(Dispatchers.Main) { noteDao.delete(noteToDelete) }
+                                        selectedNote = null
+                                        isCreatingNote = false
+                                    },
+                                    categories = categoryDao.getAllCategories(),
+                                )
                             }
                         }
                     }
                 }
-                if (isCreatingCategory) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.White)
-                    ) {
-                        CategorySelectionScreen(
-                            categories = categoryDao.getAllCategories(),
-                            onCategoryCreated = { categoryName ->
-                                val category = Category(name = categoryName)
-                                GlobalScope.launch(Dispatchers.Main) { categoryDao.insert(category) }
-                            },
-                            onCategoryDeleted = { categoryId ->
-                                if (categoryId != null) {
-                                    GlobalScope.launch(Dispatchers.IO) { categoryDao.delete(categoryId) }
-                                }
-                            },
-                            onCancel = {
-                                isCreatingCategory = false
-                                isCreatingNote = false
+            }
+            if (isCreatingCategory) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White)
+                ) {
+                    CategorySelectionScreen(
+                        categories = categoryDao.getAllCategories(),
+                        onCategoryCreated = { categoryName ->
+                            val category = Category(name = categoryName)
+                            GlobalScope.launch(Dispatchers.Main) { categoryDao.insert(category) }
+                        },
+                        onCategoryDeleted = { categoryId ->
+                            if (categoryId != null) {
+                                GlobalScope.launch(Dispatchers.IO) { categoryDao.delete(categoryId) }
                             }
-                        )
+                        },
+                        onCancel = {
+                            isCreatingCategory = false
+                            isCreatingNote = false
+                        }
+                    )
+                }
+            }
+        }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun WeatherTab() {
+    var selectedWeatherInterval by remember { mutableStateOf("Now") }
+        Column(
+            modifier = Modifier
+                .height(705.dp)
+                .padding(16.dp)
+        ) {
+            // Title
+            Text(
+                text = "Weather Data",
+                style = MaterialTheme.typography.h4,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            var expandedCatDropdown by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
+                expanded = expandedCatDropdown,
+                onExpandedChange = {
+                    expandedCatDropdown = !expandedCatDropdown
+                }
+            ) {
+
+                TextField(
+                    value = selectedWeatherInterval,
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCatDropdown) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                val weatherDataTypes = listOf("Now", "Next Hour", "Next 48 hours", "Next 8 days")
+
+                DropdownMenu(
+                    expanded = expandedCatDropdown,
+                    onDismissRequest = { expandedCatDropdown = false }
+                ) {
+                    weatherDataTypes.forEach { type ->
+                        DropdownMenuItem(
+                            onClick = {
+                                selectedWeatherInterval = type
+                                expandedCatDropdown = false
+                            }
+                        ) {
+                            Text(text = type)
+                        }
                     }
                 }
             }
-            1 -> {
 
-            }
+            // Display the selected weather interval
+            Text(
+                text = "Selected Interval: $selectedWeatherInterval",
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(top = 16.dp)
+            )
         }
-
-    }
 }
 
 /**
