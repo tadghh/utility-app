@@ -181,6 +181,9 @@ fun NotesTab(
     var isCreatingCategory by remember { mutableStateOf(false) }
     var selectedNote: Note? by remember { mutableStateOf(null) }
 
+    Box (modifier = Modifier
+        .fillMaxWidth()){
+
         Column(
             modifier = Modifier.height(705.dp)
         ) {
@@ -233,6 +236,7 @@ fun NotesTab(
                 Text(text = "Add/delete Categories")
             }
 
+        }
             if (isCreatingNote) {
                 Box(
                     modifier = Modifier
@@ -403,7 +407,7 @@ fun NoteCreationScreen(
     var categoryId by remember { mutableStateOf<Long?>(null) }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.height(705.dp)
     ) {
         // Input fields for title, content, category, and reminder
         TextField(
@@ -545,15 +549,12 @@ fun CategorySelectionScreen(
     var expandedCatDropdown by remember { mutableStateOf(false) }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        Modifier.height(705.dp)
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(16.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize()
@@ -608,7 +609,9 @@ fun CategorySelectionScreen(
                 // Button to show text field for creating a new category
                 Button(
                     onClick = { isCreatingNewCategory = true },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 ) {
                     Text("Create new Category")
                 }
@@ -644,7 +647,7 @@ fun CategorySelectionScreen(
                             onClick = {
                                 isCreatingNewCategory = false
                                 newCategoryName = ""
-                            }
+                            },
                         ) {
                             Text("Cancel")
                         }
@@ -661,7 +664,8 @@ fun CategorySelectionScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp)
+                            //.padding(top = 16.dp)
+                            .padding(16.dp)
                     ) {
                         Text("Delete")
                     }
@@ -671,7 +675,8 @@ fun CategorySelectionScreen(
                     onClick = onCancel,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp)
+                        //.padding(top = 16.dp)
+                        .padding(16.dp)
                 ) {
                     Text("Cancel")
                 }
