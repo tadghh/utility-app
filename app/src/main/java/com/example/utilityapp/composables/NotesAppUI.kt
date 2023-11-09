@@ -181,8 +181,10 @@ fun NotesTab(
     var isCreatingCategory by remember { mutableStateOf(false) }
     var selectedNote: Note? by remember { mutableStateOf(null) }
 
-    Box (modifier = Modifier
-        .fillMaxWidth()){
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
 
         Column(
             modifier = Modifier.height(705.dp)
@@ -235,65 +237,73 @@ fun NotesTab(
             ) {
                 Text(text = "Add/delete Categories")
             }
-
         }
-            if (isCreatingNote) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.White)
-                )
-                {
-                    Column(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Box(
+        if (isCreatingNote) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            )
+            {
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+                    {
+                        Card(
                             modifier = Modifier
                                 .fillMaxSize()
-                        )
-                        {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color.White)
-                            ) {
-                                // Show the note creation screen when isCreatingNote is true
-                                NoteCreationScreen(
-                                    note = selectedNote,
-                                    onNoteCreated = { newNote ->
-                                        val note = Note(
-                                            title = newNote.title,
-                                            content = newNote.content,
-                                            categoryId = newNote.categoryId
-                                        )
+                                .background(Color.White)
+                        ) {
+                            // Show the note creation screen when isCreatingNote is true
+                            NoteCreationScreen(
+                                note = selectedNote,
+                                onNoteCreated = { newNote ->
+                                    val note = Note(
+                                        title = newNote.title,
+                                        content = newNote.content,
+                                        categoryId = newNote.categoryId
+                                    )
 
-                                        GlobalScope.launch(Dispatchers.Main) { noteDao.insert(note) }
-                                        selectedNote = null
-                                        isCreatingNote = false
-                                    },
-                                    onNoteEdited = { editNote ->
-                                        GlobalScope.launch(Dispatchers.Main) { noteDao.update(editNote) }
-                                        selectedNote = null
-                                        isCreatingNote = false
-                                    },
-                                    onCancel = {
-                                        selectedNote = null
-                                        isCreatingNote = false
-                                    },
-                                    onDelete = { noteToDelete ->
-                                        GlobalScope.launch(Dispatchers.Main) { noteDao.delete(noteToDelete) }
-                                        selectedNote = null
-                                        isCreatingNote = false
-                                    },
-                                    categories = categoryDao.getAllCategories(),
-                                )
-                            }
+                                    GlobalScope.launch(Dispatchers.Main) { noteDao.insert(note) }
+                                    selectedNote = null
+                                    isCreatingNote = false
+                                },
+                                onNoteEdited = { editNote ->
+                                    GlobalScope.launch(Dispatchers.Main) { noteDao.update(editNote) }
+                                    selectedNote = null
+                                    isCreatingNote = false
+                                },
+                                onCancel = {
+                                    selectedNote = null
+                                    isCreatingNote = false
+                                },
+                                onDelete = { noteToDelete ->
+                                    GlobalScope.launch(Dispatchers.Main) {
+                                        noteDao.delete(
+                                            noteToDelete
+                                        )
+                                    }
+                                    selectedNote = null
+                                    isCreatingNote = false
+                                },
+                                categories = categoryDao.getAllCategories(),
+                            )
                         }
                     }
                 }
             }
-            if (isCreatingCategory) {
-                Box(
+        }
+        if (isCreatingCategory) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            ) {
+                Card(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(Color.White)
@@ -317,6 +327,7 @@ fun NotesTab(
                 }
             }
         }
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
