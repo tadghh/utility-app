@@ -42,10 +42,17 @@ import com.example.utilityapp.data.Category
 import com.example.utilityapp.data.CategoryDao
 import com.example.utilityapp.data.Note
 import com.example.utilityapp.data.NoteDao
+import com.google.gson.Gson
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import java.io.IOException
 
 /**
  * Converts the notes into an observable type.
@@ -330,10 +337,75 @@ fun NotesTab(
     }
 }
 
+data class WeatherData(
+    val coord: Coord?,
+    val weather: List<Weather>?,
+    val base: String?,
+    val main: Main?,
+    val visibility: Int?,
+    val wind: Wind?,
+    val clouds: Clouds?,
+    val dt: Long?,
+    val sys: Sys?,
+    val timezone: Int?,
+    val id: Long?,
+    val name: String?,
+    val cod: Int?
+)
+
+data class Coord(
+    val lon: Double?,
+    val lat: Double?
+)
+
+data class Weather(
+    val id: Int?,
+    val main: String?,
+    val description: String?,
+    val icon: String?
+)
+
+data class Main(
+    val temp: Double?,
+    val feels_like: Double?,
+    val temp_min: Double?,
+    val temp_max: Double?,
+    val pressure: Int?,
+    val humidity: Int?
+)
+
+data class Wind(
+    val speed: Double?,
+    val deg: Int?,
+    val gust: Double?
+)
+
+data class Clouds(
+    val all: Int?
+)
+
+data class Sys(
+    val type: Int?,
+    val id: Int?,
+    val country: String?,
+    val sunrise: Long?,
+    val sunset: Long?
+)
+
+// Define a callback interface
+interface WeatherDataCallback {
+    fun onSuccess(data: String)
+    fun onFailure(error: String)
+}
+
+var weatherData: WeatherData = WeatherData(null, null, null, null,
+    null, null, null, null, null, null, null, null, null)
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WeatherTab() {
-    var selectedWeatherInterval by remember { mutableStateOf("Now") }
+    var selectedWeatherInterval by remember { mutableStateOf("Current Weather") }
+
         Column(
             modifier = Modifier
                 .height(705.dp)
@@ -362,7 +434,7 @@ fun WeatherTab() {
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                val weatherDataTypes = listOf("Now", "Next Hour", "Next 48 hours", "Next 8 days")
+                val weatherDataTypes = listOf("Current Weather", "3-hour Forecast 5 days")
 
                 DropdownMenu(
                     expanded = expandedCatDropdown,
@@ -379,7 +451,46 @@ fun WeatherTab() {
                         }
                     }
                 }
+
+                val apiKey = "a66838394baf9c9ddf43532a3e3377c1"
+                val baseUrl = "https://api.openweathermap.org/data/2.5/"
+
+
+                    if(selectedWeatherInterval == "Current Weather")  {
+                        val currentWeatherUrl =
+                            "$baseUrl/weather?lat=49.895138&lon=-97.138374&appid=$apiKey"
+                        fetchWeatherData(currentWeatherUrl, object : WeatherDataCallback {
+                            override fun onSuccess(data: String) {
+                                // Handle the successful response here
+                                weatherData = parseJsonToWeatherData(data)
+
+                                println("Test: ${weatherData.weather}" )
+                                //println("Weather data: $data")
+                            }
+                            override fun onFailure(error: String) {
+                                // Handle the failure here
+                                println("Error: $error")
+                            }
+                        })
+                    }
+                    else {
+                        val forecastUrl =
+                            "$baseUrl/forecast?lat=49.895138&lon=-97.138374&appid=$apiKey"
+                        fetchWeatherData(forecastUrl, object : WeatherDataCallback {
+                            override fun onSuccess(data: String) {
+                                // Handle the successful response here
+                                println("Weather data: $data")
+                            }
+                            override fun onFailure(error: String) {
+                                // Handle the failure here
+                                println("Error: $error")
+                            }
+                        })
+                    }
             }
+            //if (weatherData.weather != null) {
+                DisplayWeather(weatherData)
+            //}
 
             // Display the selected weather interval
             Text(
@@ -388,6 +499,56 @@ fun WeatherTab() {
                 modifier = Modifier.padding(top = 16.dp)
             )
         }
+}
+
+// Parse JSON data to WeatherData object
+fun parseJsonToWeatherData(jsonData: String): WeatherData {
+    // Parse JSON string to WeatherData object
+    // Example: Use a JSON parsing library like Kotlinx.serialization, Gson, or Moshi
+    // For simplicity, here's a direct parsing implementation for the provided JSON structure
+    val gson = Gson() // Using Gson for simple JSON parsing
+    val weatherData: WeatherData= gson.fromJson(jsonData, WeatherData::class.java)
+
+    return  weatherData
+}
+
+@Composable
+fun DisplayWeather(weatherData: WeatherData) {
+    Column {
+        Text(text = "City: ${weatherData.name}")
+        Text(text = "Temperature: ${weatherData.main?.temp} K")
+        Text(text = "Description: ${weatherData.weather?.firstOrNull()?.description ?: "N/A"}")
+        Text(text = "Pressure: ${weatherData.main?.pressure} hPa")
+        Text(text = "Humidity: ${weatherData.main?.humidity}%")
+        Text(text = "Wind Speed: ${weatherData.wind?.speed} m/s")
+        // Display other relevant weather information similarly
+    }
+}
+
+val client = OkHttpClient()
+fun fetchWeatherData(url: String, callback: WeatherDataCallback) {
+    val request = Request.Builder()
+        .url(url)
+        .build()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            callback.onFailure("Network error: ${e.message}")
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            if (response.isSuccessful) {
+                val data = response.body()?.string()
+                if (data != null) {
+                    callback.onSuccess(data)
+                } else {
+                    callback.onFailure("Empty response body")
+                }
+            } else {
+                callback.onFailure("Unsuccessful response: ${response.code()}")
+            }
+        }
+    })
 }
 
 /**

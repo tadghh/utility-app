@@ -80,4 +80,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
+    implementation("com.squareup.okhttp3:okhttp:3.8.1")
+    implementation("com.google.code.gson:gson:2.8.8")
 }
