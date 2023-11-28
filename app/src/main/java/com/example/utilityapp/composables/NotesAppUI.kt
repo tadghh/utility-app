@@ -1,5 +1,6 @@
 package com.example.utilityapp.composables
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +54,19 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material.Icon
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import com.example.utilityapp.R
+
 
 /**
  * Converts the notes into an observable type.
@@ -401,6 +415,7 @@ interface WeatherDataCallback {
 var weatherData: WeatherData = WeatherData(null, null, null, null,
     null, null, null, null, null, null, null, null, null)
 
+@SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WeatherTab() {
@@ -453,7 +468,7 @@ fun WeatherTab() {
                 }
 
                 val apiKey = "a66838394baf9c9ddf43532a3e3377c1"
-                val baseUrl = "https://api.openweathermap.org/data/2.5/"
+                val baseUrl = "https://api.openweathermap.org/data/2.5"
 
 
                     if(selectedWeatherInterval == "Current Weather")  {
@@ -465,11 +480,13 @@ fun WeatherTab() {
                                 weatherData = parseJsonToWeatherData(data)
 
                                 println("Test: ${weatherData.weather}" )
+                                println("Url: $currentWeatherUrl")
                                 //println("Weather data: $data")
                             }
                             override fun onFailure(error: String) {
                                 // Handle the failure here
                                 println("Error: $error")
+                                println("Url: $currentWeatherUrl")
                             }
                         })
                     }
@@ -501,6 +518,7 @@ fun WeatherTab() {
         }
 }
 
+
 // Parse JSON data to WeatherData object
 fun parseJsonToWeatherData(jsonData: String): WeatherData {
     // Parse JSON string to WeatherData object
@@ -513,17 +531,68 @@ fun parseJsonToWeatherData(jsonData: String): WeatherData {
 }
 
 @Composable
-fun DisplayWeather(weatherData: WeatherData) {
-    Column {
-        Text(text = "City: ${weatherData.name}")
-        Text(text = "Temperature: ${weatherData.main?.temp} K")
-        Text(text = "Description: ${weatherData.weather?.firstOrNull()?.description ?: "N/A"}")
-        Text(text = "Pressure: ${weatherData.main?.pressure} hPa")
-        Text(text = "Humidity: ${weatherData.main?.humidity}%")
-        Text(text = "Wind Speed: ${weatherData.wind?.speed} m/s")
-        // Display other relevant weather information similarly
+fun WeatherCard(title: String, value: String, icon: Painter) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = 8.dp,
+        shape = MaterialTheme.shapes.medium
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            Icon(
+                painter = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colors.primary,
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(0.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.subtitle1,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.body1,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
+
+@Composable
+fun DisplayWeather(weatherData: WeatherData) {
+    val wbSunnyPainter: Painter = painterResource(id = R.drawable.wb_sunny)
+    val locationOnPainter: Painter = painterResource(id = R.drawable.location_on)
+    val trendingUpPainter: Painter = painterResource(id = R.drawable.trending_up)
+    val wavesPainter: Painter = painterResource(id = R.drawable.waves)
+    val waterPainter: Painter = painterResource(id = R.drawable.water)
+    val windPainter: Painter = painterResource(id = R.drawable.wind)
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(16.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        item("City") { WeatherCard("City", weatherData.name.toString(), locationOnPainter) }
+        item("Temperature") { WeatherCard("Temperature", "${weatherData.main?.temp} K", wbSunnyPainter) }
+        item("Description") { WeatherCard("Description", weatherData.weather?.firstOrNull()?.description ?: "N/A", trendingUpPainter) }
+        item("Pressure") { WeatherCard("Pressure", "${weatherData.main?.pressure} hPa", wavesPainter) }
+        item("Humidity") { WeatherCard("Humidity", "${weatherData.main?.humidity}%", waterPainter) }
+        item("Wind Speed") { WeatherCard("Wind Speed", "${weatherData.wind?.speed} m/s", windPainter) }
+        // Add more items for other relevant weather information similarly
+    }
+}
+
+
 
 val client = OkHttpClient()
 fun fetchWeatherData(url: String, callback: WeatherDataCallback) {
