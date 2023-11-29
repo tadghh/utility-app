@@ -688,8 +688,9 @@ fun WeatherForecastCard(date: String, forecastList: List<ForecastItem>) {
         ) {
             Text(text = "Date: $date", fontWeight = FontWeight.Bold)
             forecastList.forEach { forecastItem ->
-                Text(text = "Time: ${forecastItem.dt_txt}")
-                // Display other forecast details as needed
+                val time = forecastItem.dt_txt.split(" ")[1] // Extracting time from dt_txt
+                Text(text = "Time: $time")
+                Text(text = "Temperature: ${forecastItem.main?.temp} °C")
             }
         }
     }
