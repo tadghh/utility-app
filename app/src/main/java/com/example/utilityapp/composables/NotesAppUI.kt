@@ -64,7 +64,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import com.example.utilityapp.R
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.ui.text.font.FontWeight
 
 
 /**
@@ -370,6 +372,37 @@ data class WeatherData(
     val cod: Int?
 )
 
+data class ForecastData(
+    val cod: String?,
+    val message: Int?,
+    val cnt: Int?,
+    val list: List<ForecastItem>?,
+    val city: City?
+)
+
+data class City(
+    val id: Int?,
+    val name: String?,
+    val coordval : Coord?,
+    val country: String?,
+    val population: Int?,
+    val timezone: Int?,
+    val sunrise: Long?,
+    val sunset: Long?
+)
+
+data class ForecastItem(
+    val dt: Long,
+    val main: MainForecast?,
+    val weather: List<Weather>?,
+    val clouds: Clouds?,
+    val wind: Wind?,
+    val visibility: Int?,
+    val pop: Float?,
+    val sys: SysForecast?,
+    val dt_txt: String,
+)
+
 data class Coord(
     val lon: Double?,
     val lat: Double?
@@ -391,6 +424,18 @@ data class Main(
     val humidity: Int?
 )
 
+data class MainForecast(
+    val temp: Double?,
+    val feels_like: Double?,
+    val temp_min: Double?,
+    val temp_max: Double?,
+    val pressure: Int?,
+    val sea_level: Int?,
+    val grnd_level: Int?,
+    val humidity: Int?,
+    val temp_kf: Double?,
+)
+
 data class Wind(
     val speed: Double?,
     val deg: Int?,
@@ -409,6 +454,10 @@ data class Sys(
     val sunset: Long?
 )
 
+data class SysForecast(
+    val pod: String?,
+)
+
 // Define a callback interface
 interface WeatherDataCallback {
     fun onSuccess(data: String)
@@ -417,6 +466,8 @@ interface WeatherDataCallback {
 
 var weatherData: WeatherData = WeatherData(null, null, null, null,
     null, null, null, null, null, null, null, null, null)
+
+var forecastData: ForecastData = ForecastData(null, null, null, null, null)
 
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterialApi::class)
@@ -476,13 +527,13 @@ fun WeatherTab() {
 
                     if(selectedWeatherInterval == "Current Weather")  {
                         val currentWeatherUrl =
-                            "$baseUrl/weather?lat=49.895138&lon=-97.138374&appid=$apiKey"
+                            "$baseUrl/weather?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
                         fetchWeatherData(currentWeatherUrl, object : WeatherDataCallback {
                             override fun onSuccess(data: String) {
                                 // Handle the successful response here
                                 weatherData = parseJsonToWeatherData(data)
 
-                                println("Test: ${weatherData.weather}" )
+                                println("Current Weather: ${weatherData}" )
                                 println("Url: $currentWeatherUrl")
                                 //println("Weather data: $data")
                             }
@@ -495,11 +546,12 @@ fun WeatherTab() {
                     }
                     else {
                         val forecastUrl =
-                            "$baseUrl/forecast?lat=49.895138&lon=-97.138374&appid=$apiKey"
+                            "$baseUrl/forecast?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
                         fetchWeatherData(forecastUrl, object : WeatherDataCallback {
                             override fun onSuccess(data: String) {
                                 // Handle the successful response here
-                                println("Weather data: $data")
+                                forecastData = parseJsonToForecastData(data)
+                                println("Forecast data: ${forecastData}")
                             }
                             override fun onFailure(error: String) {
                                 // Handle the failure here
@@ -509,8 +561,13 @@ fun WeatherTab() {
                     }
             }
             //if (weatherData.weather != null) {
-                DisplayWeather(weatherData)
+//            DisplayWeather(weatherData)
             //}
+
+            val forecastInfo = forecastData.list
+            if (forecastInfo != null) {
+                DisplayForecast(forecastInfo.groupBy { it.dt_txt.split(" ")[0] })
+            }
 
             // Display the selected weather interval
             Text(
@@ -531,6 +588,16 @@ fun parseJsonToWeatherData(jsonData: String): WeatherData {
     val weatherData: WeatherData= gson.fromJson(jsonData, WeatherData::class.java)
 
     return  weatherData
+}
+
+fun parseJsonToForecastData(jsonData: String): ForecastData {
+    // Parse JSON string to WeatherData object
+    // Example: Use a JSON parsing library like Kotlinx.serialization, Gson, or Moshi
+    // For simplicity, here's a direct parsing implementation for the provided JSON structure
+    val gson = Gson() // Using Gson for simple JSON parsing
+    val forecastData: ForecastData= gson.fromJson(jsonData, ForecastData::class.java)
+    println(jsonData)
+    return  forecastData
 }
 
 @Composable
@@ -586,7 +653,7 @@ fun DisplayWeather(weatherData: WeatherData) {
         modifier = Modifier.fillMaxSize()
     ) {
         item("City") { WeatherCard("City", weatherData.name.toString(), locationOnPainter) }
-        item("Temperature") { WeatherCard("Temperature", "${weatherData.main?.temp} K", wbSunnyPainter) }
+        item("Temperature") { WeatherCard("Temperature", "${weatherData.main?.temp} °C", wbSunnyPainter) }
         item("Description") { WeatherCard("Description", weatherData.weather?.firstOrNull()?.description ?: "N/A", trendingUpPainter) }
         item("Pressure") { WeatherCard("Pressure", "${weatherData.main?.pressure} hPa", wavesPainter) }
         item("Humidity") { WeatherCard("Humidity", "${weatherData.main?.humidity}%", waterPainter) }
@@ -595,6 +662,38 @@ fun DisplayWeather(weatherData: WeatherData) {
     }
 }
 
+@Composable
+fun DisplayForecast(forecastItems: Map<String, List<ForecastItem>>) {
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState())
+    ) {
+        forecastItems.forEach { (date, forecastList) ->
+            println(date)
+            WeatherForecastCard(date = date, forecastList = forecastList)
+        }
+    }
+}
+
+@Composable
+fun WeatherForecastCard(date: String, forecastList: List<ForecastItem>) {
+    // Display a single day's forecast as a card
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = 8.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(text = "Date: $date", fontWeight = FontWeight.Bold)
+            forecastList.forEach { forecastItem ->
+                Text(text = "Time: ${forecastItem.dt_txt}")
+                // Display other forecast details as needed
+            }
+        }
+    }
+}
 
 
 val client = OkHttpClient()
