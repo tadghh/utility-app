@@ -57,15 +57,14 @@ import java.io.IOException
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.Icon
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import com.example.utilityapp.R
+import androidx.compose.ui.Alignment
 
 
 /**
@@ -153,18 +152,22 @@ fun NotesAppUI(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            when (selectedTabIndex) {
-                0 -> {
-                    NotesTab(noteDao = noteDao, categoryDao = categoryDao)
-                }
+            Box(modifier = Modifier.weight(1f)) {
+                when (selectedTabIndex) {
+                    0 -> {
+                        NotesTab(noteDao = noteDao, categoryDao = categoryDao)
+                    }
 
-                1 -> {
-                    WeatherTab()
+                    1 -> {
+                        WeatherTab()
+                    }
                 }
             }
             // Bottom Navigation
             BottomNavigation(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
                 backgroundColor = MaterialTheme.colors.primary,
                 contentColor = Color.White,
                 elevation = 8.dp
