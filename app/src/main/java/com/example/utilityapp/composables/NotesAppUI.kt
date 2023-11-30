@@ -66,6 +66,7 @@ import androidx.compose.ui.res.painterResource
 import com.example.utilityapp.R
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.text.font.FontWeight
 
 
@@ -464,16 +465,62 @@ interface WeatherDataCallback {
     fun onFailure(error: String)
 }
 
-var weatherData: WeatherData = WeatherData(null, null, null, null,
-    null, null, null, null, null, null, null, null, null)
-
-var forecastData: ForecastData = ForecastData(null, null, null, null, null)
 
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WeatherTab() {
     var selectedWeatherInterval by remember { mutableStateOf("Current Weather") }
+    var initialLoad by remember { mutableStateOf(true) }
+
+    var weatherData by remember { mutableStateOf(WeatherData(null, null, null, null,
+        null, null, null, null, null, null, null, null, null)) }
+    var forecastData by remember { mutableStateOf(ForecastData(null, null, null, null, null)) }
+
+    val apiKey = "a66838394baf9c9ddf43532a3e3377c1"
+    val baseUrl = "https://api.openweathermap.org/data/2.5"
+
+    val weatherDataTypes = listOf("Current Weather", "3-hour Forecast 5 days")
+
+    LaunchedEffect(Unit)
+    {
+        if(selectedWeatherInterval == "Current Weather")  {
+            val currentWeatherUrl =
+                "$baseUrl/weather?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
+            fetchWeatherData(currentWeatherUrl, object : WeatherDataCallback {
+                override fun onSuccess(data: String) {
+                    // Handle the successful response here
+                    weatherData = parseJsonToWeatherData(data)
+
+                    println("Current Weather: ${weatherData}" )
+                    println("Url: $currentWeatherUrl")
+                    //println("Weather data: $data")
+                }
+                override fun onFailure(error: String) {
+                    // Handle the failure here
+                    println("Error: $error")
+                    println("Url: $currentWeatherUrl")
+                }
+            })
+        }
+        else {
+            val forecastUrl =
+                "$baseUrl/forecast?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
+            fetchWeatherData(forecastUrl, object : WeatherDataCallback {
+                override fun onSuccess(data: String) {
+                    // Handle the successful response here
+                    forecastData = parseJsonToForecastData(data)
+
+                    println("Forecast data: ${forecastData}")
+                }
+                override fun onFailure(error: String) {
+                    // Handle the failure here
+                    println("Error: $error")
+                }
+            })
+        }
+    }
+
 
         Column(
             modifier = Modifier
@@ -503,7 +550,7 @@ fun WeatherTab() {
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                val weatherDataTypes = listOf("Current Weather", "3-hour Forecast 5 days")
+
 
                 DropdownMenu(
                     expanded = expandedCatDropdown,
@@ -521,11 +568,9 @@ fun WeatherTab() {
                     }
                 }
 
-                val apiKey = "a66838394baf9c9ddf43532a3e3377c1"
-                val baseUrl = "https://api.openweathermap.org/data/2.5"
 
 
-                    if(selectedWeatherInterval == "Current Weather")  {
+                if(selectedWeatherInterval == "Current Weather")  {
                         val currentWeatherUrl =
                             "$baseUrl/weather?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
                         fetchWeatherData(currentWeatherUrl, object : WeatherDataCallback {
@@ -551,6 +596,7 @@ fun WeatherTab() {
                             override fun onSuccess(data: String) {
                                 // Handle the successful response here
                                 forecastData = parseJsonToForecastData(data)
+
                                 println("Forecast data: ${forecastData}")
                             }
                             override fun onFailure(error: String) {
@@ -560,14 +606,26 @@ fun WeatherTab() {
                         })
                     }
             }
-            //if (weatherData.weather != null) {
-//            DisplayWeather(weatherData)
-            //}
 
-            val forecastInfo = forecastData.list
-            if (forecastInfo != null) {
-                DisplayForecast(forecastInfo.groupBy { it.dt_txt.split(" ")[0] })
+
+
+
+
+            if(selectedWeatherInterval == "Current Weather")
+            {
+                if (weatherData.weather != null) {
+                    DisplayWeather(weatherData)
+                }
             }
+            else
+            {
+                val forecastInfo = forecastData.list
+                if (forecastInfo != null) {
+                    DisplayForecast(forecastInfo.groupBy { it.dt_txt.split(" ")[0] })
+                }
+            }
+
+
 
             // Display the selected weather interval
             Text(
