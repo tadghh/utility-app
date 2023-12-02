@@ -68,6 +68,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -153,48 +157,44 @@ fun NotesAppUI(
     var isCreatingCategory by remember { mutableStateOf(false) }
     var selectedNote: Note? by remember { mutableStateOf(null) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Box(modifier = Modifier.weight(1f)) {
-                when (selectedTabIndex) {
-                    0 -> {
-                        NotesTab(noteDao = noteDao, categoryDao = categoryDao)
-                    }
-
-                    1 -> {
-                        WeatherTab()
-                    }
+    Column(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.weight(1f)) {
+            when (selectedTabIndex) {
+                0 -> {
+                    NotesTab(noteDao = noteDao, categoryDao = categoryDao)
+                }
+                1 -> {
+                    WeatherTab()
                 }
             }
-            // Bottom Navigation
-            BottomNavigation(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                backgroundColor = MaterialTheme.colors.primary,
-                contentColor = Color.White,
-                elevation = 8.dp
-            ) {
-                tabs.forEachIndexed { index, title ->
-                    BottomNavigationItem(
-                        icon = {
-                            when (index) {
-                                0 -> Icons.Default.Home // "Note" icon for the left tab
-                                1 -> Icons.Default.Search // "Weather" icon for the right tab
-                            }
-                        },
-                        label = { Text(text = title) },
-                        selected = selectedTabIndex == index,
-                        onClick = {
-                            selectedTabIndex = index
+        }
+        // Bottom Navigation
+        BottomNavigation(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 1.dp),
+            backgroundColor = MaterialTheme.colors.primary,
+            contentColor = Color.White,
+            elevation = 8.dp
+        ) {
+            tabs.forEachIndexed { index, title ->
+                BottomNavigationItem(
+                    icon = {
+                        when (index) {
+                            0 -> Icons.Default.Home // "Note" icon for the left tab
+                            1 -> Icons.Default.Search // "Weather" icon for the right tab
                         }
-                    )
-                }
+                    },
+                    label = { Text(text = title) },
+                    selected = selectedTabIndex == index,
+                    onClick = {
+                        selectedTabIndex = index
+                    }
+                )
             }
         }
     }
 }
-
 @Composable
 fun NotesTab(
     noteDao: NoteDao,
@@ -480,7 +480,7 @@ fun WeatherTab() {
     val apiKey = "a66838394baf9c9ddf43532a3e3377c1"
     val baseUrl = "https://api.openweathermap.org/data/2.5"
 
-    val weatherDataTypes = listOf("Current Weather", "3-hour Forecast 5 days")
+    val weatherDataTypes = listOf("Current weather", "Weather forecast for the next 5 days")
 
     LaunchedEffect(Unit)
     {
@@ -529,7 +529,7 @@ fun WeatherTab() {
         ) {
             // Title
             Text(
-                text = "Weather Data",
+                text = "Weather App",
                 style = MaterialTheme.typography.h4,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -732,6 +732,28 @@ fun DisplayForecast(forecastItems: Map<String, List<ForecastItem>>) {
     }
 }
 
+//@Composable
+//fun WeatherForecastCard(date: String, forecastList: List<ForecastItem>) {
+//    // Display a single day's forecast as a card
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(8.dp),
+//        elevation = 8.dp
+//    ) {
+//        Column(
+//            modifier = Modifier.padding(16.dp)
+//        ) {
+//            Text(text = "Date: $date", fontWeight = FontWeight.Bold)
+//            forecastList.forEach { forecastItem ->
+//                val time = forecastItem.dt_txt.split(" ")[1] // Extracting time from dt_txt
+//                Text(text = "Time: $time")
+//                Text(text = "Temperature: ${forecastItem.main?.temp} °C")
+//            }
+//        }
+//    }
+//}
+
 @Composable
 fun WeatherForecastCard(date: String, forecastList: List<ForecastItem>) {
     // Display a single day's forecast as a card
@@ -744,13 +766,60 @@ fun WeatherForecastCard(date: String, forecastList: List<ForecastItem>) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = "Date: $date", fontWeight = FontWeight.Bold)
-            forecastList.forEach { forecastItem ->
-                val time = forecastItem.dt_txt.split(" ")[1] // Extracting time from dt_txt
-                Text(text = "Time: $time")
-                Text(text = "Temperature: ${forecastItem.main?.temp} °C")
-            }
+            Text(text = "${getFormattedDate(date)}", fontWeight = FontWeight.Bold)
+            LazyRow(
+                content = {
+                    items(forecastList) { forecastItem ->
+                        ForecastCard(forecastItem)
+                    }
+                }
+            )
         }
+    }
+}
+
+@Composable
+fun ForecastCard(forecastItem: ForecastItem) {
+    val time = getFormattedTime(forecastItem.dt_txt)
+
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .background(Color.LightGray)
+            .width(120.dp)
+            .padding(8.dp)
+    ) {
+        Text(text = time, style = MaterialTheme.typography.subtitle2)
+        Text(text = "${forecastItem.main?.temp} °C", style = MaterialTheme.typography.body2)
+    }
+}
+
+fun getFormattedTime(dateTime: String): String {
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("h a", Locale.getDefault())
+    val date = inputFormat.parse(dateTime)
+    return outputFormat.format(date!!)
+}
+
+fun getFormattedDate(date: String): String {
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("d MMMM", Locale.getDefault())
+    val parsedDate = inputFormat.parse(date)
+
+    val calendar = Calendar.getInstance()
+    calendar.time = parsedDate!!
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+    val suffix = getDayOfMonthSuffix(day)
+
+    return outputFormat.format(parsedDate).replace(day.toString(), "$day$suffix")
+}
+
+fun getDayOfMonthSuffix(n: Int): String {
+    return when (n % 10) {
+        1 -> if (n == 11) "th" else "st"
+        2 -> if (n == 12) "th" else "nd"
+        3 -> if (n == 13) "th" else "rd"
+        else -> "th"
     }
 }
 
