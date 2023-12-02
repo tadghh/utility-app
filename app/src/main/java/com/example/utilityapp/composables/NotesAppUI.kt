@@ -246,7 +246,7 @@ fun NotesTab(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(top = 16.dp, bottom = 3.dp, end = 16.dp, start = 16.dp)
             ) {
                 Text(text = "Add New Note")
             }
@@ -260,9 +260,9 @@ fun NotesTab(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(top = 3.dp, bottom = 16.dp, end = 16.dp, start = 16.dp)
             ) {
-                Text(text = "Add/delete Categories")
+                Text(text = "Add/Delete Categories")
             }
         }
         if (isCreatingNote) {
@@ -480,7 +480,7 @@ fun WeatherTab() {
     val apiKey = "a66838394baf9c9ddf43532a3e3377c1"
     val baseUrl = "https://api.openweathermap.org/data/2.5"
 
-    val weatherDataTypes = listOf("Current weather", "Weather forecast for the next 5 days")
+    val weatherDataTypes = listOf("Current Weather", "Weather forecast for the next 5 days")
 
     LaunchedEffect(Unit)
     {
@@ -732,28 +732,6 @@ fun DisplayForecast(forecastItems: Map<String, List<ForecastItem>>) {
     }
 }
 
-//@Composable
-//fun WeatherForecastCard(date: String, forecastList: List<ForecastItem>) {
-//    // Display a single day's forecast as a card
-//    Card(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(8.dp),
-//        elevation = 8.dp
-//    ) {
-//        Column(
-//            modifier = Modifier.padding(16.dp)
-//        ) {
-//            Text(text = "Date: $date", fontWeight = FontWeight.Bold)
-//            forecastList.forEach { forecastItem ->
-//                val time = forecastItem.dt_txt.split(" ")[1] // Extracting time from dt_txt
-//                Text(text = "Time: $time")
-//                Text(text = "Temperature: ${forecastItem.main?.temp} °C")
-//            }
-//        }
-//    }
-//}
-
 @Composable
 fun WeatherForecastCard(date: String, forecastList: List<ForecastItem>) {
     // Display a single day's forecast as a card
@@ -878,20 +856,37 @@ fun NoteCreationScreen(
     var categoryId by remember { mutableStateOf<Long?>(null) }
 
     Column(
-        modifier = Modifier.height(705.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
-        // Input fields for title, content, category, and reminder
+        Text(
+            text = "Create/Modify Note",
+            style = MaterialTheme.typography.h5,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        // Title field
         TextField(
             value = title,
             onValueChange = { title = it },
             label = { Text("Title") },
             modifier = Modifier.fillMaxWidth()
         )
+
+        // Content field
         TextField(
             value = content,
             onValueChange = { content = it },
             label = { Text("Content") },
             modifier = Modifier.fillMaxWidth()
+        )
+
+        // Label for category selection
+        Text(
+            text = "Choose a category",
+            style = MaterialTheme.typography.subtitle1,
+            modifier = Modifier.padding(bottom = 4.dp, top = 20.dp)
         )
 
         var expandedCatDropdown by remember { mutableStateOf(false) }
@@ -907,7 +902,7 @@ fun NoteCreationScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(32.dp)
+                .padding(bottom = 32.dp, top = 0.dp)
         ) {
             ExposedDropdownMenuBox(
                 expanded = expandedCatDropdown,
@@ -944,7 +939,9 @@ fun NoteCreationScreen(
             }
         }
 
-        // Save, cancel, and delete buttons
+
+
+        // Buttons for creating/canceling note
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -1019,135 +1016,135 @@ fun CategorySelectionScreen(
     var selectedCategoryId by remember { mutableStateOf<Long?>(null) }
     var expandedCatDropdown by remember { mutableStateOf(false) }
 
-    Box(
-        Modifier.height(705.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
-        Card(
+        Text(
+            text = "Add or Delete a Category",
+            style = MaterialTheme.typography.h5,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        Text(
+            text = "Select a Category",
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.padding(top = 32.dp, bottom = 2.dp, end = 32.dp, start = 32.dp)
+        )
+
+        // Initial category selection dropdown
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight()
+                .padding(top = 2.dp, bottom = 32.dp, end = 32.dp, start = 32.dp)
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
 
-                Text(
-                    text = "Select Category",
-                    style = MaterialTheme.typography.h5,
-                    modifier = Modifier.padding(bottom = 16.dp)
+            ExposedDropdownMenuBox(
+                expanded = expandedCatDropdown,
+                onExpandedChange = {
+                    expandedCatDropdown = !expandedCatDropdown
+                }
+            ) {
+                TextField(
+                    value = selectedCategoryName,
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCatDropdown) },
+                    modifier = Modifier.fillMaxWidth()
                 )
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(32.dp)
+                DropdownMenu(
+                    expanded = expandedCatDropdown,
+                    onDismissRequest = { expandedCatDropdown = false }
                 ) {
-                    ExposedDropdownMenuBox(
-                        expanded = expandedCatDropdown,
-                        onExpandedChange = {
-                            expandedCatDropdown = !expandedCatDropdown
-                        }
-                    ) {
-
-                        TextField(
-                            value = selectedCategoryName,
-                            onValueChange = {},
-                            readOnly = true,
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCatDropdown) },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        DropdownMenu(
-                            expanded = expandedCatDropdown,
-                            onDismissRequest = { expandedCatDropdown = false }
-                        ) {
-                            categoriesList.forEach { category ->
-                                DropdownMenuItem(
-                                    onClick = {
-                                        selectedCategoryName = category.name
-                                        selectedCategoryId = category.id
-                                        expandedCatDropdown = false
-                                        isCreatingNewCategory = false
-                                    }
-                                ) {
-                                    Text(text = category.name)
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Button to show text field for creating a new category
-                Button(
-                    onClick = { isCreatingNewCategory = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text("Create new Category")
-                }
-
-                if (isCreatingNewCategory) {
-                    // Text field for entering a new category name
-                    TextField(
-                        value = newCategoryName,
-                        onValueChange = { newCategoryName = it },
-                        label = { Text("Category Name") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    // Save and Cancel buttons for creating a new category
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Button(
+                    categoriesList.forEach { category ->
+                        DropdownMenuItem(
                             onClick = {
-                                if (newCategoryName.isNotBlank()) {
-                                    onCategoryCreated(newCategoryName)
-                                    newCategoryName = ""
-                                }
-                            }
-                        ) {
-                            Text("Add")
-                        }
-
-                        Button(
-                            onClick = {
+                                selectedCategoryName = category.name
+                                selectedCategoryId = category.id
+                                expandedCatDropdown = false
                                 isCreatingNewCategory = false
-                                newCategoryName = ""
-                            },
+                            }
                         ) {
-                            Text("Cancel")
+                            Text(text = category.name)
                         }
                     }
                 }
+            }
+        }
 
-                selectedCategoryName.let { categoryName ->
-                    Text("Category chosen: $categoryName", modifier = Modifier.padding(top = 16.dp))
+        // Category chosen label
+        Text(
+            text = "Category Chosen: $selectedCategoryName",
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.padding(16.dp)
+        )
 
-                    Button(
-                        onClick = {
-                            selectedCategoryName = ""
-                            onCategoryDeleted(selectedCategoryId)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            //.padding(top = 16.dp)
-                            .padding(16.dp)
-                    ) {
-                        Text("Delete")
+        // Delete button
+        Button(
+            onClick = {
+                selectedCategoryName = ""
+                onCategoryDeleted(selectedCategoryId)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 2.dp, bottom = 2.dp, end = 16.dp, start = 16.dp)
+        ) {
+            Text("Delete")
+        }
+
+        // Cancel button
+        Button(
+            onClick = onCancel,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 2.dp, bottom = 30.dp, end = 16.dp, start = 16.dp)
+        ) {
+            Text("Cancel")
+        }
+
+        // Create new category button
+        Button(
+            onClick = { isCreatingNewCategory = true },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text("Create New Category")
+        }
+
+        // New category creation input fields and buttons
+        if (isCreatingNewCategory) {
+            TextField(
+                value = newCategoryName,
+                onValueChange = { newCategoryName = it },
+                label = { Text("Category Name") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(
+                    onClick = {
+                        if (newCategoryName.isNotBlank()) {
+                            onCategoryCreated(newCategoryName)
+                            newCategoryName = ""
+                        }
                     }
+                ) {
+                    Text("Add")
                 }
 
                 Button(
-                    onClick = onCancel,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        //.padding(top = 16.dp)
-                        .padding(16.dp)
+                    onClick = {
+                        isCreatingNewCategory = false
+                        newCategoryName = ""
+                    },
                 ) {
                     Text("Cancel")
                 }
