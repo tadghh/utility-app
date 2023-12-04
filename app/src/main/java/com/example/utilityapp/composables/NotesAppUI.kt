@@ -195,6 +195,13 @@ fun NotesAppUI(
         }
     }
 }
+
+/**
+ * Composable that represents the tab for displaying and managing notes.
+ *
+ * @param noteDao The Data Access Object for managing notes.
+ * @param categoryDao The Data Access Object for managing categories.
+ */
 @Composable
 fun NotesTab(
     noteDao: NoteDao,
@@ -357,6 +364,9 @@ fun NotesTab(
     }
 }
 
+/**
+ * Data class representing weather information fetched from the API.
+ */
 data class WeatherData(
     val coord: Coord?,
     val weather: List<Weather>?,
@@ -373,6 +383,9 @@ data class WeatherData(
     val cod: Int?
 )
 
+/**
+ * Data class representing forecast information fetched from the API.
+ */
 data class ForecastData(
     val cod: String?,
     val message: Int?,
@@ -381,6 +394,9 @@ data class ForecastData(
     val city: City?
 )
 
+/**
+ * Data class representing a city in the data fetched from the API.
+ */
 data class City(
     val id: Int?,
     val name: String?,
@@ -392,6 +408,9 @@ data class City(
     val sunset: Long?
 )
 
+/**
+ * Data class representing Forecast data for the next 5 days with 3-hour gaps
+ */
 data class ForecastItem(
     val dt: Long,
     val main: MainForecast?,
@@ -404,11 +423,17 @@ data class ForecastItem(
     val dt_txt: String,
 )
 
+/**
+ * Data class representing co-ordinates the data is fetched from
+ */
 data class Coord(
     val lon: Double?,
     val lat: Double?
 )
 
+/**
+ * Data class representing the weather entity
+ */
 data class Weather(
     val id: Int?,
     val main: String?,
@@ -416,6 +441,9 @@ data class Weather(
     val icon: String?
 )
 
+/**
+ * Data class representing the attributes for the weather like temperature, pressure etc.
+ */
 data class Main(
     val temp: Double?,
     val feels_like: Double?,
@@ -425,6 +453,9 @@ data class Main(
     val humidity: Int?
 )
 
+/**
+ * Data class representing the attributes for the weather forecast like temperature, pressure etc.
+ */
 data class MainForecast(
     val temp: Double?,
     val feels_like: Double?,
@@ -437,16 +468,25 @@ data class MainForecast(
     val temp_kf: Double?,
 )
 
+/**
+ * Data class representing the wind data from the weather
+ */
 data class Wind(
     val speed: Double?,
     val deg: Int?,
     val gust: Double?
 )
 
+/**
+ * Data class representing the entity to hold data for clouds
+ */
 data class Clouds(
     val all: Int?
 )
 
+/**
+ * Data class representing some geographical data from the API
+ */
 data class Sys(
     val type: Int?,
     val id: Int?,
@@ -455,6 +495,9 @@ data class Sys(
     val sunset: Long?
 )
 
+/**
+ * Data class to represent an internal entity from the API data
+ */
 data class SysForecast(
     val pod: String?,
 )
@@ -465,7 +508,9 @@ interface WeatherDataCallback {
     fun onFailure(error: String)
 }
 
-
+/**
+ * Composable that represents the tab for displaying weather data.
+ */
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -637,7 +682,12 @@ fun WeatherTab() {
 }
 
 
-// Parse JSON data to WeatherData object
+/**
+ * Parses the JSON data into a [WeatherData] object.
+ *
+ * @param jsonData JSON data in string format to be parsed.
+ * @return Parsed [WeatherData] object.
+ */
 fun parseJsonToWeatherData(jsonData: String): WeatherData {
     // Parse JSON string to WeatherData object
     // Example: Use a JSON parsing library like Kotlinx.serialization, Gson, or Moshi
@@ -648,6 +698,12 @@ fun parseJsonToWeatherData(jsonData: String): WeatherData {
     return  weatherData
 }
 
+/**
+ * Parses the JSON data into a [ForecastData] object.
+ *
+ * @param jsonData JSON data in string format to be parsed.
+ * @return Parsed [ForecastData] object.
+ */
 fun parseJsonToForecastData(jsonData: String): ForecastData {
     // Parse JSON string to WeatherData object
     // Example: Use a JSON parsing library like Kotlinx.serialization, Gson, or Moshi
@@ -658,6 +714,13 @@ fun parseJsonToForecastData(jsonData: String): ForecastData {
     return  forecastData
 }
 
+/**
+ * A composable function to display weather-related information in a card layout.
+ *
+ * @param title The title for the weather card.
+ * @param value The value to be displayed.
+ * @param icon The icon for the weather card.
+ */
 @Composable
 fun WeatherCard(title: String, value: String, icon: Painter) {
     Card(
@@ -696,6 +759,11 @@ fun WeatherCard(title: String, value: String, icon: Painter) {
     }
 }
 
+/**
+ * A composable function to display forecasted weather information.
+ *
+ * @param forecastItems A map containing forecasted weather items grouped by date.
+ */
 @Composable
 fun DisplayWeather(weatherData: WeatherData) {
     val wbSunnyPainter: Painter = painterResource(id = R.drawable.wb_sunny)
@@ -720,6 +788,11 @@ fun DisplayWeather(weatherData: WeatherData) {
     }
 }
 
+/**
+ * A composable function to display forecasted weather information.
+ *
+ * @param forecastItems A map containing forecasted weather items grouped by date.
+ */
 @Composable
 fun DisplayForecast(forecastItems: Map<String, List<ForecastItem>>) {
     Column(
@@ -732,6 +805,12 @@ fun DisplayForecast(forecastItems: Map<String, List<ForecastItem>>) {
     }
 }
 
+/**
+ * A composable function to display weather forecast for a specific date.
+ *
+ * @param date The date for the weather forecast.
+ * @param forecastList List of forecast items for the specified date.
+ */
 @Composable
 fun WeatherForecastCard(date: String, forecastList: List<ForecastItem>) {
     // Display a single day's forecast as a card
@@ -756,6 +835,11 @@ fun WeatherForecastCard(date: String, forecastList: List<ForecastItem>) {
     }
 }
 
+/**
+ * A composable function to display individual forecast cards.
+ *
+ * @param forecastItem The forecast item to display.
+ */
 @Composable
 fun ForecastCard(forecastItem: ForecastItem) {
     val time = getFormattedTime(forecastItem.dt_txt)
@@ -772,6 +856,12 @@ fun ForecastCard(forecastItem: ForecastItem) {
     }
 }
 
+/**
+ * Formats the provided date-time string into a 12-hour format.
+ *
+ * @param dateTime The date-time string to be formatted.
+ * @return The formatted time string in 12-hour format.
+ */
 fun getFormattedTime(dateTime: String): String {
     val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     val outputFormat = SimpleDateFormat("h a", Locale.getDefault())
@@ -779,6 +869,12 @@ fun getFormattedTime(dateTime: String): String {
     return outputFormat.format(date!!)
 }
 
+/**
+ * Formats the provided date string into a custom date format.
+ *
+ * @param date The date string to be formatted.
+ * @return The formatted date string in a custom format (day with suffix and month).
+ */
 fun getFormattedDate(date: String): String {
     val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     val outputFormat = SimpleDateFormat("d MMMM", Locale.getDefault())
@@ -792,6 +888,12 @@ fun getFormattedDate(date: String): String {
     return outputFormat.format(parsedDate).replace(day.toString(), "$day$suffix")
 }
 
+/**
+ * Determines the suffix for a given day of the month (e.g., 1st, 2nd, 3rd, etc.).
+ *
+ * @param n The day of the month.
+ * @return The suffix for the provided day.
+ */
 fun getDayOfMonthSuffix(n: Int): String {
     return when (n % 10) {
         1 -> if (n == 11) "th" else "st"
@@ -803,6 +905,13 @@ fun getDayOfMonthSuffix(n: Int): String {
 
 
 val client = OkHttpClient()
+
+/**
+ * Fetches weather data from the specified URL using OkHttp.
+ *
+ * @param url The URL to fetch weather data from.
+ * @param callback The callback for handling successful/failure scenarios.
+ */
 fun fetchWeatherData(url: String, callback: WeatherDataCallback) {
     val request = Request.Builder()
         .url(url)
