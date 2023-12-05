@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -69,7 +68,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ButtonDefaults
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -172,7 +171,7 @@ fun NotesAppUI(
         BottomNavigation(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 1.dp),
+                .padding(bottom = 0.dp),
             backgroundColor = MaterialTheme.colors.primary,
             contentColor = Color.White,
             elevation = 8.dp
@@ -189,7 +188,8 @@ fun NotesAppUI(
                     selected = selectedTabIndex == index,
                     onClick = {
                         selectedTabIndex = index
-                    }
+
+                    },
                 )
             }
         }
@@ -253,9 +253,10 @@ fun NotesTab(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp, bottom = 3.dp, end = 16.dp, start = 16.dp)
+                    .padding(top = 16.dp, bottom = 3.dp, end = 16.dp, start = 16.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant)
             ) {
-                Text(text = "Add New Note")
+                Text(text = "Add New Note", color = Color.White)
             }
 
             // Button to add a new note
@@ -268,8 +269,12 @@ fun NotesTab(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 3.dp, bottom = 16.dp, end = 16.dp, start = 16.dp)
+
             ) {
-                Text(text = "Add/Delete Categories")
+                Text(
+                    text = "Add/Delete Categories",
+                    color = Color.White
+                )
             }
         }
         if (isCreatingNote) {
@@ -516,15 +521,12 @@ interface WeatherDataCallback {
 @Composable
 fun WeatherTab() {
     var selectedWeatherInterval by remember { mutableStateOf("Current Weather") }
-    var initialLoad by remember { mutableStateOf(true) }
-
     var weatherData by remember { mutableStateOf(WeatherData(null, null, null, null,
         null, null, null, null, null, null, null, null, null)) }
     var forecastData by remember { mutableStateOf(ForecastData(null, null, null, null, null)) }
 
     val apiKey = "a66838394baf9c9ddf43532a3e3377c1"
     val baseUrl = "https://api.openweathermap.org/data/2.5"
-
     val weatherDataTypes = listOf("Current Weather", "Weather forecast for the next 5 days")
 
     LaunchedEffect(Unit)
@@ -537,14 +539,11 @@ fun WeatherTab() {
                     // Handle the successful response here
                     weatherData = parseJsonToWeatherData(data)
 
-                    println("Current Weather: ${weatherData}" )
-                    println("Url: $currentWeatherUrl")
-                    //println("Weather data: $data")
                 }
                 override fun onFailure(error: String) {
                     // Handle the failure here
                     println("Error: $error")
-                    println("Url: $currentWeatherUrl")
+
                 }
             })
         }
@@ -556,7 +555,6 @@ fun WeatherTab() {
                     // Handle the successful response here
                     forecastData = parseJsonToForecastData(data)
 
-                    println("Forecast data: ${forecastData}")
                 }
                 override fun onFailure(error: String) {
                     // Handle the failure here
@@ -623,14 +621,10 @@ fun WeatherTab() {
                                 // Handle the successful response here
                                 weatherData = parseJsonToWeatherData(data)
 
-                                println("Current Weather: ${weatherData}" )
-                                println("Url: $currentWeatherUrl")
-                                //println("Weather data: $data")
                             }
                             override fun onFailure(error: String) {
                                 // Handle the failure here
                                 println("Error: $error")
-                                println("Url: $currentWeatherUrl")
                             }
                         })
                     }
@@ -642,7 +636,6 @@ fun WeatherTab() {
                                 // Handle the successful response here
                                 forecastData = parseJsonToForecastData(data)
 
-                                println("Forecast data: ${forecastData}")
                             }
                             override fun onFailure(error: String) {
                                 // Handle the failure here
@@ -1084,8 +1077,9 @@ fun NoteCreationScreen(
             // Cancel button
             Button(
                 onClick = onCancel,
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant)
             ) {
-                Text("Cancel")
+                Text("Cancel", color = Color.White)
             }
 
             // Delete button (show only if it's an existing note)
@@ -1094,6 +1088,7 @@ fun NoteCreationScreen(
                     onClick = {
                         onDelete(note)
                     },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
                 ) {
                     Text("Delete")
                 }
@@ -1198,7 +1193,8 @@ fun CategorySelectionScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 2.dp, bottom = 2.dp, end = 16.dp, start = 16.dp)
+                .padding(top = 2.dp, bottom = 2.dp, end = 16.dp, start = 16.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
         ) {
             Text("Delete")
         }
@@ -1208,9 +1204,10 @@ fun CategorySelectionScreen(
             onClick = onCancel,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 2.dp, bottom = 30.dp, end = 16.dp, start = 16.dp)
+                .padding(top = 2.dp, bottom = 30.dp, end = 16.dp, start = 16.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant)
         ) {
-            Text("Cancel")
+            Text("Cancel", color = Color.White)
         }
 
         // Create new category button
