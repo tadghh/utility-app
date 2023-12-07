@@ -1,23 +1,18 @@
-package com.example.utilityapp.composables
+package com.example.coopt2_fughetabout_it_inc.composables
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.ExposedDropdownMenuDefaults
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -25,44 +20,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
+import com.example.utilityapp.composables.observeAsState
 import com.example.utilityapp.data.Category
-import com.example.utilityapp.data.Note
 
-/**
- * Composable for displaying a single note item.
- *
- * @param note The note to display.
- * @param onItemClick The action to perform when the note is clicked.
- */
-@Composable
-fun NoteItem(
-    note: Note,
-    onItemClick: (Note) -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .background(Color.White),
-        elevation = 4.dp
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .clickable(onClick = { onItemClick(note) })
-        ) {
-            Text(
-                text = note.title,
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-}
+
+import com.example.utilityapp.data.Note
 
 
 /**
@@ -95,35 +63,20 @@ fun NoteCreationScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(20.dp)
     ) {
-        Text(
-            text = "Create/Modify Note",
-            style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        // Title field
+        // Input fields for title, content, category, and reminder
         TextField(
             value = title,
             onValueChange = { title = it },
             label = { Text("Title") },
             modifier = Modifier.fillMaxWidth()
         )
-
-        // Content field
         TextField(
             value = content,
             onValueChange = { content = it },
             label = { Text("Content") },
             modifier = Modifier.fillMaxWidth()
-        )
-
-        // Label for category selection
-        Text(
-            text = "Choose a category",
-            style = MaterialTheme.typography.subtitle1,
-            modifier = Modifier.padding(bottom = 4.dp, top = 20.dp)
         )
 
         var expandedCatDropdown by remember { mutableStateOf(false) }
@@ -136,16 +89,24 @@ fun NoteCreationScreen(
                 selectedCategoryName = existingCategory.name
             }
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 32.dp, top = 0.dp)
-        ) {
+        Row(Modifier.padding(5.dp)) {
+            Text(
+                text = "Category: ",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .padding(vertical = 18.dp, horizontal = 2.dp)
+                    .align(Alignment.CenterVertically)
+
+            )
             ExposedDropdownMenuBox(
                 expanded = expandedCatDropdown,
                 onExpandedChange = {
                     expandedCatDropdown = !expandedCatDropdown
-                }
+                },
+                modifier = Modifier
+                    .padding(vertical = 23.dp)
+                    .height(55.dp)
             ) {
 
                 TextField(
@@ -177,7 +138,7 @@ fun NoteCreationScreen(
         }
 
 
-        // Buttons for creating/canceling note
+        // Save, cancel, and delete buttons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -211,9 +172,8 @@ fun NoteCreationScreen(
             // Cancel button
             Button(
                 onClick = onCancel,
-                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant)
             ) {
-                Text("Cancel", color = Color.White)
+                Text("Cancel")
             }
 
             // Delete button (show only if it's an existing note)
@@ -222,7 +182,6 @@ fun NoteCreationScreen(
                     onClick = {
                         onDelete(note)
                     },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
                 ) {
                     Text("Delete")
                 }

@@ -1,16 +1,17 @@
 package com.example.utilityapp.composables
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
@@ -27,8 +28,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import com.example.utilityapp.data.Category
@@ -126,123 +130,46 @@ fun CategorySelectionScreen(
     var selectedCategoryName by remember { mutableStateOf("") }
     var selectedCategoryId by remember { mutableStateOf<Long?>(null) }
     var expandedCatDropdown by remember { mutableStateOf(false) }
+    var isEditingCategory by remember { mutableStateOf(false) }
 
-    Column(
+    //Used to keep track of input
+    val focusManager = LocalFocusManager.current
+    Card(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+            .fillMaxWidth()
+            .fillMaxHeight()
     ) {
-        Text(
-            text = "Add or Delete a Category",
-            style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        Text(
-            text = "Select a Category",
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier.padding(top = 32.dp, bottom = 2.dp, end = 32.dp, start = 32.dp)
-        )
-
-        // Initial category selection dropdown
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 2.dp, bottom = 32.dp, end = 32.dp, start = 32.dp)
-        ) {
-
-            ExposedDropdownMenuBox(
-                expanded = expandedCatDropdown,
-                onExpandedChange = {
-                    expandedCatDropdown = !expandedCatDropdown
-                }
-            ) {
+        //Allows you to click off a text input, this is placed on the parent element otherwise we cant click "anywhere"
+        Column(Modifier.pointerInput(Unit) {
+            detectTapGestures(onTap = {
+                focusManager.clearFocus()
+            })
+        }) {
+            if (isCreatingNewCategory) {
+                Text(
+                    text = "Create Category",
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier
+                        .padding(vertical = 6.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+                // Text field for entering a new category name
                 TextField(
-                    value = selectedCategoryName,
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCatDropdown) },
-                    modifier = Modifier.fillMaxWidth()
+
+                    value = newCategoryName,
+                    onValueChange = { newCategoryName = it },
+                    label = { Text("Category Name") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally)
                 )
 
-                DropdownMenu(
-                    expanded = expandedCatDropdown,
-                    onDismissRequest = { expandedCatDropdown = false }
-                ) {
-                    categoriesList.forEach { category ->
-                        DropdownMenuItem(
-                            onClick = {
-                                selectedCategoryName = category.name
-                                selectedCategoryId = category.id
-                                expandedCatDropdown = false
-                                isCreatingNewCategory = false
-                            }
-                        ) {
-                            Text(text = category.name)
-                        }
-                    }
-                }
-            }
-        }
+                // Save and Cancel buttons for creating a new category
 
-        // Category chosen label
-        Text(
-            text = "Category Chosen: $selectedCategoryName",
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier.padding(16.dp)
-        )
-
-        // Delete button
-        Button(
-            onClick = {
-                selectedCategoryName = ""
-                onCategoryDeleted(selectedCategoryId)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 2.dp, bottom = 2.dp, end = 16.dp, start = 16.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
-        ) {
-            Text("Delete")
-        }
-
-        // Cancel button
-        Button(
-            onClick = onCancel,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 2.dp, bottom = 30.dp, end = 16.dp, start = 16.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant)
-        ) {
-            Text("Cancel", color = Color.White)
-        }
-
-        // Create new category button
-        Button(
-            onClick = { isCreatingNewCategory = true },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text("Create New Category")
-        }
-
-        // New category creation input fields and buttons
-        if (isCreatingNewCategory) {
-            TextField(
-                value = newCategoryName,
-                onValueChange = { newCategoryName = it },
-                label = { Text("Category Name") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Row(
-                modifier = Modifier
+                Button(modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Button(
+                    .padding(16.dp),
                     onClick = {
                         if (newCategoryName.isNotBlank()) {
                             onCategoryCreated(newCategoryName)
@@ -253,15 +180,109 @@ fun CategorySelectionScreen(
                     Text("Add")
                 }
 
-                Button(
+                Button(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
                     onClick = {
                         isCreatingNewCategory = false
+                        isEditingCategory = false
                         newCategoryName = ""
-                    },
+                    }
                 ) {
                     Text("Cancel")
                 }
             }
+
+            if (!isEditingCategory) {
+                Text(
+                    text = "Select Category",
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier
+                        .padding(vertical = 6.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+
+                ExposedDropdownMenuBox(
+                    expanded = expandedCatDropdown,
+                    onExpandedChange = {
+                        expandedCatDropdown = !expandedCatDropdown
+                    },
+                    modifier = Modifier
+                        .padding(horizontal = 1.dp)
+                        .align(Alignment.CenterHorizontally)
+
+                ) {
+
+                    TextField(
+                        value = selectedCategoryName,
+                        onValueChange = {},
+                        readOnly = true,
+
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCatDropdown) }
+                    )
+
+                    DropdownMenu(
+                        expanded = expandedCatDropdown,
+                        onDismissRequest = { expandedCatDropdown = false },
+
+                        ) {
+                        categoriesList.forEach { category ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    selectedCategoryName = category.name
+                                    selectedCategoryId = category.id
+                                    expandedCatDropdown = false
+                                    isCreatingNewCategory = false
+                                },
+                            ) {
+                                Text(
+                                    text = category.name,
+                                    modifier = Modifier
+                                        .padding(horizontal = 1.dp)
+                                        .fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
+                }
+                Text(
+                    "Category chosen: $selectedCategoryName",
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier.padding(start = 16.dp, top = 5.dp)
+                )
+                Button(
+                    onClick = {
+                        selectedCategoryName = ""
+                        onCategoryDeleted(selectedCategoryId)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text("Delete")
+                }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+            // Button to show text field for creating a new category
+            Button(
+                onClick = { isCreatingNewCategory = true; isEditingCategory = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+
+            ) {
+                Text("Create new Category")
+            }
+            Button(
+                onClick = onCancel,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text("View notes")
+            }
         }
+
     }
 }
