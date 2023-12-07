@@ -29,7 +29,7 @@ fun NoteItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 3.dp, horizontal = 15.dp)
+            .padding(vertical = 10.dp, horizontal = 15.dp)
             .background(Color.White)
             .clickable(onClick = { onItemClick(note) }),
         elevation = 4.dp
@@ -45,7 +45,7 @@ fun NoteItem(
                 Text(
                     text = truncatedText,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
                 )
             }
         }
