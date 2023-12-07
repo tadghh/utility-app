@@ -1,4 +1,4 @@
-package com.example.utilityapp.composables
+package com.example.utilityapp.composables.weather
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -42,6 +42,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.utilityapp.R
 import androidx.compose.material.Divider
+import com.example.utilityapp.composables.ForecastData
+import com.example.utilityapp.composables.ForecastItem
+import com.example.utilityapp.composables.WeatherData
+import com.example.utilityapp.composables.getFormattedDate
+import com.example.utilityapp.composables.getFormattedTime
+import com.example.utilityapp.composables.parseJsonToForecastData
+import com.example.utilityapp.composables.parseJsonToWeatherData
 
 
 /**

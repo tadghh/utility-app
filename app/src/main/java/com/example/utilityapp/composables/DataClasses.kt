@@ -1,6 +1,5 @@
 package com.example.utilityapp.composables
 
-
 /**
  * Data class representing weather information fetched from the API.
  */

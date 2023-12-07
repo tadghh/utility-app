@@ -3,7 +3,7 @@ package com.example.utilityapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.utilityapp.composables.NotesAppUI
+import com.example.utilityapp.composables.notes.NotesAppUI
 import com.example.utilityapp.data.AppDatabase
 import com.example.utilityapp.data.CategoryDao
 import com.example.utilityapp.data.NoteDao
