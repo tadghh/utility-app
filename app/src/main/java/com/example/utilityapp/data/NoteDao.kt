@@ -1,7 +1,11 @@
 package com.example.utilityapp.data
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
 
 /**
  * Data Access Object (DAO) for the Note entity.
@@ -30,7 +34,7 @@ interface NoteDao {
      * @param note The note to be updated (nullable).
      */
     @Update
-    suspend fun update(note: Note?)
+    suspend fun update(note: Note)
 
     /**
      * Deletes a note from the database.
