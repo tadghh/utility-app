@@ -81,20 +81,7 @@ fun NotesTab(
                 }
             }
 
-            // Button to add a new note
-            Button(
-                onClick = {
-                    selectedNote = null // Clear the selected note
-                    isCreatingNote = true
-                    isCreatingCategory = false
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp, bottom = 3.dp, end = 16.dp, start = 16.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant)
-            ) {
-                Text(text = "Add New Note", color = Color.White)
-            }
+
 
             // Button to add a new note
             Button(
@@ -105,13 +92,28 @@ fun NotesTab(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 3.dp, bottom = 16.dp, end = 16.dp, start = 16.dp)
+                    .padding(top = 3.dp, bottom = 3.dp, end = 16.dp, start = 16.dp)
 
             ) {
                 Text(
                     text = "Add/Delete Categories",
                     color = Color.White
                 )
+            }
+
+            // Button to add a new note
+            Button(
+                onClick = {
+                    selectedNote = null // Clear the selected note
+                    isCreatingNote = true
+                    isCreatingCategory = false
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 3.dp, bottom = 3.dp, end = 16.dp, start = 16.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant)
+            ) {
+                Text(text = "Add New Note", color = Color.White)
             }
         }
         if (isCreatingNote) {

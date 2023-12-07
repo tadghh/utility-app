@@ -65,9 +65,10 @@ fun WeatherTab() {
     val baseUrl = "https://api.openweathermap.org/data/2.5"
     val weatherDataTypes = listOf("Current Weather", "Weather forecast for the next 5 days")
 
+    // Populate data variables by calling API on load
     LaunchedEffect(Unit)
     {
-        if (selectedWeatherInterval == "Current Weather") {
+
             val currentWeatherUrl =
                 "$baseUrl/weather?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
             fetchWeatherData(currentWeatherUrl, object : WeatherDataCallback {
@@ -83,7 +84,7 @@ fun WeatherTab() {
 
                 }
             })
-        } else {
+
             val forecastUrl =
                 "$baseUrl/forecast?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
             fetchWeatherData(forecastUrl, object : WeatherDataCallback {
@@ -98,7 +99,7 @@ fun WeatherTab() {
                     println("Error: $error")
                 }
             })
-        }
+
     }
 
 
@@ -149,38 +150,6 @@ fun WeatherTab() {
             }
 
 
-
-            if (selectedWeatherInterval == "Current Weather") {
-                val currentWeatherUrl =
-                    "$baseUrl/weather?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
-                fetchWeatherData(currentWeatherUrl, object : WeatherDataCallback {
-                    override fun onSuccess(data: String) {
-                        // Handle the successful response here
-                        weatherData = parseJsonToWeatherData(data)
-
-                    }
-
-                    override fun onFailure(error: String) {
-                        // Handle the failure here
-                        println("Error: $error")
-                    }
-                })
-            } else {
-                val forecastUrl =
-                    "$baseUrl/forecast?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
-                fetchWeatherData(forecastUrl, object : WeatherDataCallback {
-                    override fun onSuccess(data: String) {
-                        // Handle the successful response here
-                        forecastData = parseJsonToForecastData(data)
-
-                    }
-
-                    override fun onFailure(error: String) {
-                        // Handle the failure here
-                        println("Error: $error")
-                    }
-                })
-            }
         }
 
 

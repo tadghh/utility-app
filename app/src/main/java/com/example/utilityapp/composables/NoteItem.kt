@@ -34,17 +34,28 @@ fun NoteItem(
             .clickable(onClick = { onItemClick(note) }),
         elevation = 4.dp
     ) {
+        val maxLength = 50;
+        val truncatedText = note.content.limitCharacters(maxLength)
         Row(Modifier.padding(horizontal = 20.dp, vertical = 5.dp)) {
             Column {
                 Text(
-                    text = "Title: " + note.title,
-                    style = MaterialTheme.typography.bodySmall,
+                    text = note.title,
+                    style = MaterialTheme.typography.headlineSmall,
                 )
                 Text(
-                    text = "Content: " + note.content,
-                    style = MaterialTheme.typography.bodySmall
+                    text = truncatedText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
         }
+    }
+}
+
+fun String.limitCharacters(limit: Int): String {
+    return if (this.length > limit) {
+        "${this.take(limit)}....."
+    } else {
+        this
     }
 }

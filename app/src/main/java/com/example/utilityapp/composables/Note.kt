@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.ExposedDropdownMenuDefaults
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -28,8 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
 import com.example.utilityapp.composables.observeAsState
 import com.example.utilityapp.data.Category
-
-
+import androidx.compose.ui.graphics.Color
 import com.example.utilityapp.data.Note
 
 
@@ -172,8 +173,9 @@ fun NoteCreationScreen(
             // Cancel button
             Button(
                 onClick = onCancel,
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant)
             ) {
-                Text("Cancel")
+                Text("Cancel", color = Color.White)
             }
 
             // Delete button (show only if it's an existing note)
@@ -182,6 +184,7 @@ fun NoteCreationScreen(
                     onClick = {
                         onDelete(note)
                     },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
                 ) {
                     Text("Delete")
                 }

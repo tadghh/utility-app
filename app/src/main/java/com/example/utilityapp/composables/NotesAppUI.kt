@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -150,7 +151,7 @@ fun CategorySelectionScreen(
                     text = "Create Category",
                     style = MaterialTheme.typography.h5,
                     modifier = Modifier
-                        .padding(vertical = 6.dp)
+                        .padding(top = 32.dp, bottom = 10.dp)
                         .align(Alignment.CenterHorizontally)
                 )
                 // Text field for entering a new category name
@@ -169,7 +170,8 @@ fun CategorySelectionScreen(
 
                 Button(modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(top = 32.dp, bottom = 16.dp, start = 100.dp, end = 100.dp),
+
                     onClick = {
                         if (newCategoryName.isNotBlank()) {
                             onCategoryCreated(newCategoryName)
@@ -182,14 +184,15 @@ fun CategorySelectionScreen(
 
                 Button(modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(top = 0.dp, bottom = 16.dp, start = 100.dp, end = 100.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant),
                     onClick = {
                         isCreatingNewCategory = false
                         isEditingCategory = false
                         newCategoryName = ""
                     }
                 ) {
-                    Text("Cancel")
+                    Text("Cancel", color = Color.White)
                 }
             }
 
@@ -198,7 +201,7 @@ fun CategorySelectionScreen(
                     text = "Select Category",
                     style = MaterialTheme.typography.h5,
                     modifier = Modifier
-                        .padding(vertical = 6.dp)
+                        .padding(top = 32.dp, bottom = 10.dp)
                         .align(Alignment.CenterHorizontally)
                 )
 
@@ -245,11 +248,23 @@ fun CategorySelectionScreen(
                         }
                     }
                 }
-                Text(
-                    "Category chosen: $selectedCategoryName",
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier.padding(start = 16.dp, top = 5.dp)
-                )
+
+                if (selectedCategoryName == "")
+                {
+                    Text(
+                        "No Category Selected",
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.padding(top = 20.dp).align(alignment = Alignment.CenterHorizontally)
+                    )
+                }
+                else
+                {
+                    Text(
+                        "Category chosen: $selectedCategoryName",
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.padding(top = 20.dp).align(alignment = Alignment.CenterHorizontally)
+                    )
+                }
                 Button(
                     onClick = {
                         selectedCategoryName = ""
@@ -257,7 +272,8 @@ fun CategorySelectionScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(top = 32.dp, bottom = 16.dp, start = 100.dp, end = 100.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
                 ) {
                     Text("Delete")
                 }
@@ -278,9 +294,10 @@ fun CategorySelectionScreen(
                 onClick = onCancel,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant)
             ) {
-                Text("View notes")
+                Text("View notes", color = Color.White)
             }
         }
 
