@@ -1,9 +1,9 @@
 package com.example.utilityapp.composables.notes
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,13 +24,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
 import com.example.utilityapp.composables.observeAsState
 import com.example.utilityapp.data.Category
-import androidx.compose.ui.graphics.Color
 import com.example.utilityapp.data.Note
 
 
@@ -60,11 +62,16 @@ fun NoteCreationScreen(
     var title by remember { mutableStateOf(note?.title ?: "") }
     var content by remember { mutableStateOf(note?.content ?: "") }
     var categoryId by remember { mutableStateOf<Long?>(null) }
+    val focusManager = LocalFocusManager.current
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
+        Modifier
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            }
+            .padding(16.dp)
     ) {
         // Input fields for title, content, category, and reminder
         TextField(
