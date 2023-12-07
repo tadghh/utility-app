@@ -3,25 +3,25 @@ package com.example.utilityapp.composables
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.ExposedDropdownMenuDefaults
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -30,14 +30,20 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
+import com.example.utilityapp.R
 import com.example.utilityapp.data.Category
 import com.example.utilityapp.data.CategoryDao
 import com.example.utilityapp.data.Note
@@ -53,24 +59,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.material.Icon
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
-import com.example.utilityapp.R
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material.ButtonDefaults
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 
 /**
@@ -162,6 +153,7 @@ fun NotesAppUI(
                 0 -> {
                     NotesTab(noteDao = noteDao, categoryDao = categoryDao)
                 }
+
                 1 -> {
                     WeatherTab()
                 }
@@ -405,7 +397,7 @@ data class ForecastData(
 data class City(
     val id: Int?,
     val name: String?,
-    val coordval : Coord?,
+    val coordval: Coord?,
     val country: String?,
     val population: Int?,
     val timezone: Int?,
@@ -521,8 +513,14 @@ interface WeatherDataCallback {
 @Composable
 fun WeatherTab() {
     var selectedWeatherInterval by remember { mutableStateOf("Current Weather") }
-    var weatherData by remember { mutableStateOf(WeatherData(null, null, null, null,
-        null, null, null, null, null, null, null, null, null)) }
+    var weatherData by remember {
+        mutableStateOf(
+            WeatherData(
+                null, null, null, null,
+                null, null, null, null, null, null, null, null, null
+            )
+        )
+    }
     var forecastData by remember { mutableStateOf(ForecastData(null, null, null, null, null)) }
 
     val apiKey = "a66838394baf9c9ddf43532a3e3377c1"
@@ -531,7 +529,7 @@ fun WeatherTab() {
 
     LaunchedEffect(Unit)
     {
-        if(selectedWeatherInterval == "Current Weather")  {
+        if (selectedWeatherInterval == "Current Weather") {
             val currentWeatherUrl =
                 "$baseUrl/weather?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
             fetchWeatherData(currentWeatherUrl, object : WeatherDataCallback {
@@ -540,14 +538,14 @@ fun WeatherTab() {
                     weatherData = parseJsonToWeatherData(data)
 
                 }
+
                 override fun onFailure(error: String) {
                     // Handle the failure here
                     println("Error: $error")
 
                 }
             })
-        }
-        else {
+        } else {
             val forecastUrl =
                 "$baseUrl/forecast?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
             fetchWeatherData(forecastUrl, object : WeatherDataCallback {
@@ -556,6 +554,7 @@ fun WeatherTab() {
                     forecastData = parseJsonToForecastData(data)
 
                 }
+
                 override fun onFailure(error: String) {
                     // Handle the failure here
                     println("Error: $error")
@@ -565,113 +564,110 @@ fun WeatherTab() {
     }
 
 
-        Column(
-            modifier = Modifier
-                .height(705.dp)
-                .padding(16.dp)
+    Column(
+        modifier = Modifier
+            .height(705.dp)
+            .padding(16.dp)
+    ) {
+        // Title
+        Text(
+            text = "Weather App",
+            style = MaterialTheme.typography.h4,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        var expandedCatDropdown by remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(
+            expanded = expandedCatDropdown,
+            onExpandedChange = {
+                expandedCatDropdown = !expandedCatDropdown
+            }
         ) {
-            // Title
-            Text(
-                text = "Weather App",
-                style = MaterialTheme.typography.h4,
-                modifier = Modifier.padding(bottom = 16.dp)
+
+            TextField(
+                value = selectedWeatherInterval,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCatDropdown) },
+                modifier = Modifier.fillMaxWidth()
             )
 
-            var expandedCatDropdown by remember { mutableStateOf(false) }
-            ExposedDropdownMenuBox(
+
+
+            DropdownMenu(
                 expanded = expandedCatDropdown,
-                onExpandedChange = {
-                    expandedCatDropdown = !expandedCatDropdown
-                }
+                onDismissRequest = { expandedCatDropdown = false }
             ) {
-
-                TextField(
-                    value = selectedWeatherInterval,
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCatDropdown) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-
-
-                DropdownMenu(
-                    expanded = expandedCatDropdown,
-                    onDismissRequest = { expandedCatDropdown = false }
-                ) {
-                    weatherDataTypes.forEach { type ->
-                        DropdownMenuItem(
-                            onClick = {
-                                selectedWeatherInterval = type
-                                expandedCatDropdown = false
-                            }
-                        ) {
-                            Text(text = type)
+                weatherDataTypes.forEach { type ->
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedWeatherInterval = type
+                            expandedCatDropdown = false
                         }
+                    ) {
+                        Text(text = type)
                     }
-                }
-
-
-
-                if(selectedWeatherInterval == "Current Weather")  {
-                        val currentWeatherUrl =
-                            "$baseUrl/weather?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
-                        fetchWeatherData(currentWeatherUrl, object : WeatherDataCallback {
-                            override fun onSuccess(data: String) {
-                                // Handle the successful response here
-                                weatherData = parseJsonToWeatherData(data)
-
-                            }
-                            override fun onFailure(error: String) {
-                                // Handle the failure here
-                                println("Error: $error")
-                            }
-                        })
-                    }
-                    else {
-                        val forecastUrl =
-                            "$baseUrl/forecast?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
-                        fetchWeatherData(forecastUrl, object : WeatherDataCallback {
-                            override fun onSuccess(data: String) {
-                                // Handle the successful response here
-                                forecastData = parseJsonToForecastData(data)
-
-                            }
-                            override fun onFailure(error: String) {
-                                // Handle the failure here
-                                println("Error: $error")
-                            }
-                        })
-                    }
-            }
-
-
-
-
-
-            if(selectedWeatherInterval == "Current Weather")
-            {
-                if (weatherData.weather != null) {
-                    DisplayWeather(weatherData)
-                }
-            }
-            else
-            {
-                val forecastInfo = forecastData.list
-                if (forecastInfo != null) {
-                    DisplayForecast(forecastInfo.groupBy { it.dt_txt.split(" ")[0] })
                 }
             }
 
 
 
-            // Display the selected weather interval
-            Text(
-                text = "Selected Interval: $selectedWeatherInterval",
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(top = 16.dp)
-            )
+            if (selectedWeatherInterval == "Current Weather") {
+                val currentWeatherUrl =
+                    "$baseUrl/weather?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
+                fetchWeatherData(currentWeatherUrl, object : WeatherDataCallback {
+                    override fun onSuccess(data: String) {
+                        // Handle the successful response here
+                        weatherData = parseJsonToWeatherData(data)
+
+                    }
+
+                    override fun onFailure(error: String) {
+                        // Handle the failure here
+                        println("Error: $error")
+                    }
+                })
+            } else {
+                val forecastUrl =
+                    "$baseUrl/forecast?lat=49.895138&lon=-97.138374&appid=$apiKey&units=metric"
+                fetchWeatherData(forecastUrl, object : WeatherDataCallback {
+                    override fun onSuccess(data: String) {
+                        // Handle the successful response here
+                        forecastData = parseJsonToForecastData(data)
+
+                    }
+
+                    override fun onFailure(error: String) {
+                        // Handle the failure here
+                        println("Error: $error")
+                    }
+                })
+            }
         }
+
+
+
+
+
+        if (selectedWeatherInterval == "Current Weather") {
+            if (weatherData.weather != null) {
+                DisplayWeather(weatherData)
+            }
+        } else {
+            val forecastInfo = forecastData.list
+            if (forecastInfo != null) {
+                DisplayForecast(forecastInfo.groupBy { it.dt_txt.split(" ")[0] })
+            }
+        }
+
+
+        // Display the selected weather interval
+        Text(
+            text = "Selected Interval: $selectedWeatherInterval",
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+    }
 }
 
 
@@ -686,9 +682,9 @@ fun parseJsonToWeatherData(jsonData: String): WeatherData {
     // Example: Use a JSON parsing library like Kotlinx.serialization, Gson, or Moshi
     // For simplicity, here's a direct parsing implementation for the provided JSON structure
     val gson = Gson() // Using Gson for simple JSON parsing
-    val weatherData: WeatherData= gson.fromJson(jsonData, WeatherData::class.java)
+    val weatherData: WeatherData = gson.fromJson(jsonData, WeatherData::class.java)
 
-    return  weatherData
+    return weatherData
 }
 
 /**
@@ -702,9 +698,9 @@ fun parseJsonToForecastData(jsonData: String): ForecastData {
     // Example: Use a JSON parsing library like Kotlinx.serialization, Gson, or Moshi
     // For simplicity, here's a direct parsing implementation for the provided JSON structure
     val gson = Gson() // Using Gson for simple JSON parsing
-    val forecastData: ForecastData= gson.fromJson(jsonData, ForecastData::class.java)
+    val forecastData: ForecastData = gson.fromJson(jsonData, ForecastData::class.java)
     println(jsonData)
-    return  forecastData
+    return forecastData
 }
 
 /**
@@ -772,11 +768,35 @@ fun DisplayWeather(weatherData: WeatherData) {
         modifier = Modifier.fillMaxSize()
     ) {
         item("City") { WeatherCard("City", weatherData.name.toString(), locationOnPainter) }
-        item("Temperature") { WeatherCard("Temperature", "${weatherData.main?.temp} °C", wbSunnyPainter) }
-        item("Description") { WeatherCard("Description", weatherData.weather?.firstOrNull()?.description ?: "N/A", trendingUpPainter) }
-        item("Pressure") { WeatherCard("Pressure", "${weatherData.main?.pressure} hPa", wavesPainter) }
+        item("Temperature") {
+            WeatherCard(
+                "Temperature",
+                "${weatherData.main?.temp} °C",
+                wbSunnyPainter
+            )
+        }
+        item("Description") {
+            WeatherCard(
+                "Description",
+                weatherData.weather?.firstOrNull()?.description ?: "N/A",
+                trendingUpPainter
+            )
+        }
+        item("Pressure") {
+            WeatherCard(
+                "Pressure",
+                "${weatherData.main?.pressure} hPa",
+                wavesPainter
+            )
+        }
         item("Humidity") { WeatherCard("Humidity", "${weatherData.main?.humidity}%", waterPainter) }
-        item("Wind Speed") { WeatherCard("Wind Speed", "${weatherData.wind?.speed} m/s", windPainter) }
+        item("Wind Speed") {
+            WeatherCard(
+                "Wind Speed",
+                "${weatherData.wind?.speed} m/s",
+                windPainter
+            )
+        }
         // Add more items for other relevant weather information similarly
     }
 }
@@ -917,14 +937,14 @@ fun fetchWeatherData(url: String, callback: WeatherDataCallback) {
 
         override fun onResponse(call: Call, response: Response) {
             if (response.isSuccessful) {
-                val data = response.body()?.string()
+                val data = response.body?.string()
                 if (data != null) {
                     callback.onSuccess(data)
                 } else {
                     callback.onFailure("Empty response body")
                 }
             } else {
-                callback.onFailure("Unsuccessful response: ${response.code()}")
+                callback.onFailure("Unsuccessful response: ${response.code}")
             }
         }
     })
@@ -1040,7 +1060,6 @@ fun NoteCreationScreen(
                 }
             }
         }
-
 
 
         // Buttons for creating/canceling note
