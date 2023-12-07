@@ -1,4 +1,4 @@
-package com.example.utilityapp.composables
+package com.example.utilityapp.composables.weather
 
 import okhttp3.Call
 import okhttp3.Callback
@@ -33,7 +33,7 @@ fun fetchWeatherData(url: String, callback: WeatherDataCallback) {
         override fun onFailure(call: Call, e: IOException) {
             callback.onFailure("Network error: ${e.message}")
         }
-
+        
         override fun onResponse(call: Call, response: Response) {
             if (response.isSuccessful) {
                 val data = response.body?.string()

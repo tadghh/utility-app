@@ -1,4 +1,4 @@
-package com.example.utilityapp.composables
+package com.example.utilityapp.composables.notes
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -36,6 +36,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
+import com.example.utilityapp.composables.observeAsState
+import com.example.utilityapp.composables.weather.WeatherTab
 import com.example.utilityapp.data.Category
 import com.example.utilityapp.data.CategoryDao
 import com.example.utilityapp.data.NoteDao

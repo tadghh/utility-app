@@ -1,4 +1,4 @@
-package com.example.utilityapp.composables
+package com.example.utilityapp.composables.notes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,7 +18,7 @@ import com.example.utilityapp.data.Note
 /**
  * Composable for displaying a single note item.
  *
- * @param note The note to displghjay.
+ * @param note The note to display.
  * @param onItemClick The action to perform when the note is clicked.
  */
 @Composable

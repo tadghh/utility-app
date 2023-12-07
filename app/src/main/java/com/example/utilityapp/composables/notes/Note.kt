@@ -1,4 +1,4 @@
-package com.example.coopt2_fughetabout_it_inc.composables
+package com.example.utilityapp.composables.notes
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
