@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.utilityapp.R
+import androidx.compose.material.Divider
 
 
 /**
@@ -105,7 +106,7 @@ fun WeatherTab() {
 
     Column(
         modifier = Modifier
-            .height(705.dp)
+            .fillMaxSize()
             .padding(16.dp)
     ) {
         // Title
@@ -305,13 +306,15 @@ fun WeatherForecastCard(date: String, forecastList: List<ForecastItem>) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        elevation = 8.dp
+            .padding(start = 8.dp, end = 8.dp, top = 20.dp, bottom = 5.dp),
+        elevation = 8.dp,
+        backgroundColor = Color.LightGray
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = getFormattedDate(date), fontWeight = FontWeight.Bold)
+            Text(text = getFormattedDate(date), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.subtitle1)
+            Divider(color = MaterialTheme.colors.onSurface, modifier = Modifier.padding(vertical = 8.dp))
             LazyRow(
                 content = {
                     items(forecastList) { forecastItem ->
@@ -335,11 +338,11 @@ fun ForecastCard(forecastItem: ForecastItem) {
     Column(
         modifier = Modifier
             .padding(8.dp)
-            .background(Color.LightGray)
+            .background(MaterialTheme.colors.primaryVariant)
             .width(120.dp)
             .padding(8.dp)
     ) {
-        Text(text = time, style = MaterialTheme.typography.subtitle2)
-        Text(text = "${forecastItem.main?.temp} °C", style = MaterialTheme.typography.body2)
+        Text(text = time, style = MaterialTheme.typography.subtitle2, color = Color.White)
+        Text(text = "${forecastItem.main?.temp} °C", style = MaterialTheme.typography.body2, color = Color.White)
     }
 }
