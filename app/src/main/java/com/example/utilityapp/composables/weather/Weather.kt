@@ -60,16 +60,8 @@ import com.example.utilityapp.composables.parseJsonToWeatherData
 @Composable
 fun WeatherTab() {
 	var selectedWeatherInterval by remember { mutableStateOf("Current Weather") }
-	var weatherData by remember {
-		mutableStateOf(
-			WeatherData(
-				null, null, null, null,
-				null, null, null, null, null, null, null, null, null
-			)
-		)
-	}
-	var forecastData by remember { mutableStateOf(ForecastData(null, null, null, null, null)) }
-//
+	var weatherData by remember { mutableStateOf(WeatherData()) }
+	var forecastData by remember { mutableStateOf(ForecastData()) }
 	val apiKey = "a66838394baf9c9ddf43532a3e3377c1"
 	val baseUrl = "https://api.openweathermap.org/data/2.5"
 	val weatherDataTypes = listOf(
@@ -109,11 +101,9 @@ fun WeatherTab() {
 			}
 
 			override fun onFailure(error: String) {
-				// Handle the failure here
 				println("Error: $error")
 			}
 		})
-
 	}
 
 
@@ -145,8 +135,6 @@ fun WeatherTab() {
 				modifier = Modifier.fillMaxWidth()
 			)
 
-
-
 			DropdownMenu(
 				expanded = expandedCatDropdown,
 				onDismissRequest = { expandedCatDropdown = false }
@@ -162,13 +150,7 @@ fun WeatherTab() {
 					}
 				}
 			}
-
-
 		}
-
-
-
-
 
 		if (selectedWeatherInterval == stringResource(R.string.current_weather)) {
 			if (weatherData.weather != null) {
@@ -177,7 +159,7 @@ fun WeatherTab() {
 		} else {
 			val forecastInfo = forecastData.list
 			if (forecastInfo != null) {
-				DisplayForecast(forecastInfo.groupBy { it.dt_txt.split(" ")[0] })
+				DisplayForecast(forecastInfo.groupBy { it.dtTxt.split(" ")[0] })
 			}
 		}
 
@@ -353,7 +335,7 @@ fun WeatherForecastCard(date: String, forecastList: List<ForecastItem>) {
  */
 @Composable
 fun ForecastCard(forecastItem: ForecastItem) {
-	val time = getFormattedTime(forecastItem.dt_txt)
+	val time = getFormattedTime(forecastItem.dtTxt)
 
 	Column(
 		modifier = Modifier
