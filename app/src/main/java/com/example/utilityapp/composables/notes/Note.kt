@@ -49,22 +49,22 @@ import com.example.utilityapp.data.Note
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NoteCreationScreen(
-    note: Note?, // nullable note parameter in-case we are opening a note instead of creating
-    onNoteCreated: (Note) -> Unit,
-    onNoteEdited: (Note) -> Unit,
-    onCancel: () -> Unit,
-    onDelete: (Note) -> Unit,
-    categories: LiveData<List<Category>>,
+	note: Note?, // nullable note parameter in-case we are opening a note instead of creating
+	onNoteCreated: (Note) -> Unit,
+	onNoteEdited: (Note) -> Unit,
+	onCancel: () -> Unit,
+	onDelete: (Note) -> Unit,
+	categories: LiveData<List<Category>>,
 ) {
-    // Define state variables for user input
-    val categoriesList = categories.observeAsState(emptyList())
+	// Define state variables for user input
+	val categoriesList = categories.observeAsState(emptyList())
 
-    var title by remember { mutableStateOf(note?.title ?: "") }
-    var content by remember { mutableStateOf(note?.content ?: "") }
-    var categoryId by remember { mutableStateOf<Long?>(null) }
-    val focusManager = LocalFocusManager.current
+	var title by remember { mutableStateOf(note?.title ?: "") }
+	var content by remember { mutableStateOf(note?.content ?: "") }
+	var categoryId by remember { mutableStateOf<Long?>(null) }
+	val focusManager = LocalFocusManager.current
 
-    Column(
+	Column(
         Modifier
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
@@ -72,130 +72,130 @@ fun NoteCreationScreen(
                 })
             }
             .padding(16.dp)
-    ) {
-        // Input fields for title, content, category, and reminder
-        TextField(
-            value = title,
-            onValueChange = { title = it },
-            label = { Text("Title") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        TextField(
-            value = content,
-            onValueChange = { content = it },
-            label = { Text("Content") },
-            modifier = Modifier.fillMaxWidth()
-        )
+	) {
+		// Input fields for title, content, category, and reminder
+		TextField(
+			value = title,
+			onValueChange = { title = it },
+			label = { Text("Title") },
+			modifier = Modifier.fillMaxWidth()
+		)
+		TextField(
+			value = content,
+			onValueChange = { content = it },
+			label = { Text("Content") },
+			modifier = Modifier.fillMaxWidth()
+		)
 
-        var expandedCatDropdown by remember { mutableStateOf(false) }
-        var selectedCategoryName by remember { mutableStateOf("") }
+		var expandedCatDropdown by remember { mutableStateOf(false) }
+		var selectedCategoryName by remember { mutableStateOf("") }
 
-        // If an existing category ID is provided, find and set the initial state
-        if (note?.categoryId != null) {
-            val existingCategory = categoriesList.find { it.id == note.categoryId }
-            if (existingCategory != null) {
-                selectedCategoryName = existingCategory.name
-            }
-        }
-        Row(Modifier.padding(5.dp)) {
-            Text(
-                text = "Category: ",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
+		// If an existing category ID is provided, find and set the initial state
+		if (note?.categoryId != null) {
+			val existingCategory = categoriesList.find { it.id == note.categoryId }
+			if (existingCategory != null) {
+				selectedCategoryName = existingCategory.name
+			}
+		}
+		Row(Modifier.padding(5.dp)) {
+			Text(
+				text = "Category: ",
+				fontSize = 20.sp,
+				fontWeight = FontWeight.Bold,
+				modifier = Modifier
                     .padding(vertical = 18.dp, horizontal = 2.dp)
                     .align(Alignment.CenterVertically)
 
-            )
-            ExposedDropdownMenuBox(
-                expanded = expandedCatDropdown,
-                onExpandedChange = {
-                    expandedCatDropdown = !expandedCatDropdown
-                },
-                modifier = Modifier
+			)
+			ExposedDropdownMenuBox(
+				expanded = expandedCatDropdown,
+				onExpandedChange = {
+					expandedCatDropdown = !expandedCatDropdown
+				},
+				modifier = Modifier
                     .padding(vertical = 23.dp)
                     .height(55.dp)
-            ) {
+			) {
 
-                TextField(
-                    value = selectedCategoryName,
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCatDropdown) },
-                    modifier = Modifier.fillMaxWidth()
-                )
+				TextField(
+					value = selectedCategoryName,
+					onValueChange = {},
+					readOnly = true,
+					trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCatDropdown) },
+					modifier = Modifier.fillMaxWidth()
+				)
 
-                DropdownMenu(
-                    expanded = expandedCatDropdown,
-                    onDismissRequest = { expandedCatDropdown = false }
-                ) {
-                    categoriesList.forEach { category ->
-                        DropdownMenuItem(
-                            onClick = {
-                                selectedCategoryName = category.name
-                                note?.categoryId = category.id
-                                categoryId = category.id
-                                expandedCatDropdown = false
-                            }
-                        ) {
-                            Text(text = category.name)
-                        }
-                    }
-                }
-            }
-        }
+				DropdownMenu(
+					expanded = expandedCatDropdown,
+					onDismissRequest = { expandedCatDropdown = false }
+				) {
+					categoriesList.forEach { category ->
+						DropdownMenuItem(
+							onClick = {
+								selectedCategoryName = category.name
+								note?.categoryId = category.id
+								categoryId = category.id
+								expandedCatDropdown = false
+							}
+						) {
+							Text(text = category.name)
+						}
+					}
+				}
+			}
+		}
 
 
-        // Save, cancel, and delete buttons
-        Row(
-            modifier = Modifier
+		// Save, cancel, and delete buttons
+		Row(
+			modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = {
-                    if (note == null) {
-                        val newNote = Note(
-                            id = 0L,
-                            title = title,
-                            content = content,
-                            categoryId = categoryId,
-                        )
-                        onNoteCreated(newNote)
-                    } else {
-                        note.title = title
-                        note.content = content
-                        onNoteEdited(note)
-                    }
-                },
-            ) {
-                if (note == null) {
-                    Text("Create")
-                } else {
-                    Text("Save")
-                }
-            }
+			horizontalArrangement = Arrangement.SpaceBetween
+		) {
+			Button(
+				onClick = {
+					if (note == null) {
+						val newNote = Note(
+							id = 0L,
+							title = title,
+							content = content,
+							categoryId = categoryId,
+						)
+						onNoteCreated(newNote)
+					} else {
+						note.title = title
+						note.content = content
+						onNoteEdited(note)
+					}
+				},
+			) {
+				if (note == null) {
+					Text("Create")
+				} else {
+					Text("Save")
+				}
+			}
 
-            // Cancel button
-            Button(
-                onClick = onCancel,
-                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant)
-            ) {
-                Text("Cancel", color = Color.White)
-            }
+			// Cancel button
+			Button(
+				onClick = onCancel,
+				colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant)
+			) {
+				Text("Cancel", color = Color.White)
+			}
 
-            // Delete button (show only if it's an existing note)
-            if (note != null) {
-                Button(
-                    onClick = {
-                        onDelete(note)
-                    },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
-                ) {
-                    Text("Delete")
-                }
-            }
-        }
-    }
+			// Delete button (show only if it's an existing note)s
+			if (note != null) {
+				Button(
+					onClick = {
+						onDelete(note)
+					},
+					colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
+				) {
+					Text("Delete")
+				}
+			}
+		}
+	}
 }

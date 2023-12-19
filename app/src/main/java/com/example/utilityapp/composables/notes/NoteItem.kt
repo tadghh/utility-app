@@ -23,39 +23,44 @@ import com.example.utilityapp.data.Note
  */
 @Composable
 fun NoteItem(
-    note: Note,
-    onItemClick: (Note) -> Unit
+	note: Note,
+	onItemClick: (Note) -> Unit
 ) {
-    Card(
-        modifier = Modifier
+	Card(
+		modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp, horizontal = 15.dp)
             .background(Color.White)
             .clickable(onClick = { onItemClick(note) }),
-        elevation = 4.dp
-    ) {
-        val maxLength = 50;
-        val truncatedText = note.content.limitCharacters(maxLength)
-        Row(Modifier.padding(horizontal = 20.dp, vertical = 5.dp)) {
-            Column {
-                Text(
-                    text = note.title,
-                    style = MaterialTheme.typography.headlineSmall,
-                )
-                Text(
-                    text = truncatedText,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
-                )
-            }
-        }
-    }
+		elevation = 4.dp
+	) {
+		val maxLength = 50
+		val truncatedText = note.content.limitCharacters(maxLength)
+		Row(Modifier.padding(horizontal = 20.dp, vertical = 5.dp)) {
+			Column {
+				Text(
+					text = note.title,
+					style = MaterialTheme.typography.headlineSmall,
+				)
+				Text(
+					text = truncatedText,
+					style = MaterialTheme.typography.bodyMedium,
+					modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+				)
+			}
+		}
+	}
 }
 
+/**
+ * Truncates a string to an amount.
+ *
+ * @param limit the maximum characters.
+ */
 fun String.limitCharacters(limit: Int): String {
-    return if (this.length > limit) {
-        "${this.take(limit)}....."
-    } else {
-        this
-    }
+	return if (this.length > limit) {
+		"${this.take(limit)}....."
+	} else {
+		this
+	}
 }

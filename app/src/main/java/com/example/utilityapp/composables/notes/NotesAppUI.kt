@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,7 +42,6 @@ import com.example.utilityapp.composables.weather.WeatherTab
 import com.example.utilityapp.data.Category
 import com.example.utilityapp.data.CategoryDao
 import com.example.utilityapp.data.NoteDao
-import kotlinx.coroutines.DelicateCoroutinesApi
 
 
 /**
@@ -50,13 +50,12 @@ import kotlinx.coroutines.DelicateCoroutinesApi
  * @param noteDao Data access object for notes.
  * @param categoryDao Data access object for categories.
  */
-@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun NotesAppUI(
     noteDao: NoteDao,
     categoryDao: CategoryDao,
 ) {
-    var selectedTabIndex by remember { mutableStateOf(0) } // to track the selected tab index
+    var selectedTabIndex: Int by remember { mutableIntStateOf(0) } // to track the selected tab index
 
     // Define the tabs for bottom navigation
     val tabs = listOf("Notes", "Weather")

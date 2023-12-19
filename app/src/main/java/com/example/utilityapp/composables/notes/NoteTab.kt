@@ -48,8 +48,8 @@ fun NotesTab(
     val notesList = noteDao.getAllNotes().observeAsState(emptyList())
 
     // State to track whether the user is creating a new note
-    var isCreatingNote by remember { mutableStateOf(false) }
-    var isCreatingCategory by remember { mutableStateOf(false) }
+    var isCreatingNote: Boolean by remember { mutableStateOf(false) }
+    var isCreatingCategory: Boolean by remember { mutableStateOf(false) }
     var selectedNote: Note? by remember { mutableStateOf(null) }
 
     Box(

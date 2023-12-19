@@ -20,21 +20,21 @@ import java.util.Locale
  */
 @Composable
 fun <T> LiveData<T>.observeAsState(initial: T): T {
-    val liveData = this
-    val state = remember { mutableStateOf(initial) }
+	val liveData = this
+	val state = remember { mutableStateOf(initial) }
 
-    DisposableEffect(liveData) {
-        val observer = Observer<T> { value ->
-            state.value = value
-        }
-        liveData.observeForever(observer)
+	DisposableEffect(liveData) {
+		val observer = Observer<T> { value ->
+			state.value = value
+		}
+		liveData.observeForever(observer)
 
-        onDispose {
-            liveData.removeObserver(observer)
-        }
-    }
+		onDispose {
+			liveData.removeObserver(observer)
+		}
+	}
 
-    return state.value
+	return state.value
 }
 
 
@@ -45,13 +45,12 @@ fun <T> LiveData<T>.observeAsState(initial: T): T {
  * @return Parsed [WeatherData] object.
  */
 fun parseJsonToWeatherData(jsonData: String): WeatherData {
-    // Parse JSON string to WeatherData object
-    // Example: Use a JSON parsing library like Kotlinx.serialization, Gson, or Moshi
-    // For simplicity, here's a direct parsing implementation for the provided JSON structure
-    val gson = Gson() // Using Gson for simple JSON parsing
-    val weatherData: WeatherData = gson.fromJson(jsonData, WeatherData::class.java)
+	// Parse JSON string to WeatherData object
+	// Example: Use a JSON parsing library like Kotlinx.serialization, Gson, or Moshi
+	// For simplicity, here's a direct parsing implementation for the provided JSON structure
+	val gson = Gson() // Using Gson for simple JSON parsing
 
-    return weatherData
+	return gson.fromJson(jsonData, WeatherData::class.java)
 }
 
 /**
@@ -61,13 +60,13 @@ fun parseJsonToWeatherData(jsonData: String): WeatherData {
  * @return Parsed [ForecastData] object.
  */
 fun parseJsonToForecastData(jsonData: String): ForecastData {
-    // Parse JSON string to WeatherData object
-    // Example: Use a JSON parsing library like Kotlinx.serialization, Gson, or Moshi
-    // For simplicity, here's a direct parsing implementation for the provided JSON structure
-    val gson = Gson() // Using Gson for simple JSON parsing
-    val forecastData: ForecastData = gson.fromJson(jsonData, ForecastData::class.java)
-    println(jsonData)
-    return forecastData
+	// Parse JSON string to WeatherData object
+	// Example: Use a JSON parsing library like Kotlinx.serialization, Gson, or Moshi
+	// For simplicity, here's a direct parsing implementation for the provided JSON structure
+	val gson = Gson() // Using Gson for simple JSON parsing
+	val forecastData: ForecastData = gson.fromJson(jsonData, ForecastData::class.java)
+	println(jsonData)
+	return forecastData
 }
 
 
@@ -78,10 +77,10 @@ fun parseJsonToForecastData(jsonData: String): ForecastData {
  * @return The formatted time string in 12-hour format.
  */
 fun getFormattedTime(dateTime: String): String {
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-    val outputFormat = SimpleDateFormat("h a", Locale.getDefault())
-    val date = inputFormat.parse(dateTime)
-    return outputFormat.format(date!!)
+	val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+	val outputFormat = SimpleDateFormat("h a", Locale.getDefault())
+	val date = inputFormat.parse(dateTime)
+	return outputFormat.format(date!!)
 }
 
 /**
@@ -91,16 +90,16 @@ fun getFormattedTime(dateTime: String): String {
  * @return The formatted date string in a custom format (day with suffix and month).
  */
 fun getFormattedDate(date: String): String {
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    val outputFormat = SimpleDateFormat("d MMMM", Locale.getDefault())
-    val parsedDate = inputFormat.parse(date)
+	val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+	val outputFormat = SimpleDateFormat("d MMMM", Locale.getDefault())
+	val parsedDate = inputFormat.parse(date)
 
-    val calendar = Calendar.getInstance()
-    calendar.time = parsedDate!!
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
-    val suffix = getDayOfMonthSuffix(day)
+	val calendar = Calendar.getInstance()
+	calendar.time = parsedDate!!
+	val day = calendar.get(Calendar.DAY_OF_MONTH)
+	val suffix = getDayOfMonthSuffix(day)
 
-    return outputFormat.format(parsedDate).replace(day.toString(), "$day$suffix")
+	return outputFormat.format(parsedDate).replace(day.toString(), "$day$suffix")
 }
 
 /**
@@ -110,10 +109,10 @@ fun getFormattedDate(date: String): String {
  * @return The suffix for the provided day.
  */
 fun getDayOfMonthSuffix(n: Int): String {
-    return when (n % 10) {
-        1 -> if (n == 11) "th" else "st"
-        2 -> if (n == 12) "th" else "nd"
-        3 -> if (n == 13) "th" else "rd"
-        else -> "th"
-    }
+	return when (n % 10) {
+		1 -> if (n == 11) "th" else "st"
+		2 -> if (n == 12) "th" else "nd"
+		3 -> if (n == 13) "th" else "rd"
+		else -> "th"
+	}
 }
