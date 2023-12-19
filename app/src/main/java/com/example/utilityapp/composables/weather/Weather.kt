@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -71,7 +72,12 @@ fun WeatherTab() {
 //
 	val apiKey = "a66838394baf9c9ddf43532a3e3377c1"
 	val baseUrl = "https://api.openweathermap.org/data/2.5"
-	val weatherDataTypes = listOf("Current Weather", "Weather forecast for the next 5 days")
+	val weatherDataTypes = listOf(
+		stringResource(R.string.current_weather), stringResource(
+			R
+				.string.next_five_days
+		)
+	)
 
 	// Populate data variables by calling API on load
 	LaunchedEffect(Unit)
@@ -113,12 +119,12 @@ fun WeatherTab() {
 
 	Column(
 		modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+			.fillMaxSize()
+			.padding(16.dp)
 	) {
 		// Title
 		Text(
-			text = "Weather App",
+			text = stringResource(R.string.weather),
 			style = MaterialTheme.typography.h4,
 			modifier = Modifier.padding(bottom = 16.dp)
 		)
@@ -164,7 +170,7 @@ fun WeatherTab() {
 
 
 
-		if (selectedWeatherInterval == "Current Weather") {
+		if (selectedWeatherInterval == stringResource(R.string.current_weather)) {
 			if (weatherData.weather != null) {
 				DisplayWeather(weatherData)
 			}
@@ -197,23 +203,23 @@ fun WeatherTab() {
 fun WeatherCard(title: String, value: String, icon: Painter) {
 	Card(
 		modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+			.fillMaxWidth()
+			.padding(8.dp),
 		elevation = 8.dp,
 		shape = MaterialTheme.shapes.medium
 	) {
 		Column(
 			modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
+				.padding(16.dp)
+				.fillMaxWidth()
 		) {
 			Icon(
 				painter = icon,
 				contentDescription = null,
 				tint = MaterialTheme.colors.primary,
 				modifier = Modifier
-                    .size(40.dp)
-                    .padding(0.dp)
+					.size(40.dp)
+					.padding(0.dp)
 			)
 			Spacer(modifier = Modifier.height(8.dp))
 			Text(
@@ -312,8 +318,8 @@ fun WeatherForecastCard(date: String, forecastList: List<ForecastItem>) {
 	// Display a single day's forecast as a card
 	Card(
 		modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 8.dp, end = 8.dp, top = 20.dp, bottom = 5.dp),
+			.fillMaxWidth()
+			.padding(start = 8.dp, end = 8.dp, top = 20.dp, bottom = 5.dp),
 		elevation = 8.dp,
 		backgroundColor = Color.LightGray
 	) {
@@ -351,10 +357,10 @@ fun ForecastCard(forecastItem: ForecastItem) {
 
 	Column(
 		modifier = Modifier
-            .padding(8.dp)
-            .background(MaterialTheme.colors.primaryVariant)
-            .width(120.dp)
-            .padding(8.dp)
+			.padding(8.dp)
+			.background(MaterialTheme.colors.primaryVariant)
+			.width(120.dp)
+			.padding(8.dp)
 	) {
 		Text(text = time, style = MaterialTheme.typography.subtitle2, color = Color.White)
 		Text(

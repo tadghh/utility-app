@@ -79,13 +79,13 @@ fun NoteCreationScreen(
 		TextField(
 			value = title,
 			onValueChange = { title = it },
-			label = { Text("Title") },
+			label = { Text(stringResource(R.string.title)) },
 			modifier = Modifier.fillMaxWidth()
 		)
 		TextField(
 			value = content,
 			onValueChange = { content = it },
-			label = { Text("Content") },
+			label = { Text(stringResource(R.string.content)) },
 			modifier = Modifier.fillMaxWidth()
 		)
 
@@ -101,7 +101,7 @@ fun NoteCreationScreen(
 		}
 		Row(Modifier.padding(5.dp)) {
 			Text(
-				text = stringResource(R.string.app_name),
+				text = stringResource(R.string.category),
 				fontSize = 20.sp,
 				fontWeight = FontWeight.Bold,
 				modifier = Modifier
@@ -173,9 +173,9 @@ fun NoteCreationScreen(
 				},
 			) {
 				if (note == null) {
-					Text("Create")
+					Text(stringResource(R.string.create))
 				} else {
-					Text("Save")
+					Text(stringResource(R.string.save))
 				}
 			}
 
@@ -184,7 +184,7 @@ fun NoteCreationScreen(
 				onClick = onCancel,
 				colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant)
 			) {
-				Text("Cancel", color = Color.White)
+				Text(stringResource(R.string.cancel), color = Color.White)
 			}
 
 			// Delete button (show only if it's an existing note)s
@@ -195,7 +195,7 @@ fun NoteCreationScreen(
 					},
 					colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
 				) {
-					Text("Delete")
+					Text(stringResource(R.string.delete))
 				}
 			}
 		}
