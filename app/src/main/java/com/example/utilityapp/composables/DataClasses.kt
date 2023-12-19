@@ -1,62 +1,37 @@
 package com.example.utilityapp.composables
 
+import com.google.gson.annotations.SerializedName
+
 /**
  * Data class representing weather information fetched from the API.
+ * @property coord Coordinates of the location.
+ * @property weather List of weather conditions at the location.
+ * @property base Information about the weather station.
+ * @property main Main weather-related information such as temperature, pressure, etc.
+ * @property visibility Visibility at the location.
+ * @property wind Wind-related information including speed and direction.
+ * @property clouds Cloud-related information.
+ * @property dt Timestamp of the weather data.
+ * @property sys System information related to the weather data.
+ * @property timezone Timezone of the location.
+ * @property id Unique identifier for the weather station.
+ * @property name Name of the location.
+ * @property cod HTTP response code from the API.
  */
 data class WeatherData(
-
-	/**
-	 *  Weather Coordinates
-	 */
-	val coord: Coord?,
-	/**
-	 *  Weather station information
-	 */
-	val weather: List<Weather>?,
-	/**
-	 *  Weather Station?
-	 */
-	val base: String?,
-	/**
-	 *  Unknown
-	 */
-	val main: Main?,
-	/**
-	 *  Fog
-	 */
-	val visibility: Int?,
-	/**
-	 *  Wind speed/direction
-	 */
-	val wind: Wind?,
-	/**
-	 *  Clouds status
-	 */
-	val clouds: Clouds?,
-	/**
-	 *  Unknown
-	 */
-	val dt: Long?,
-	/**
-	 *  Unknown
-	 */
-	val sys: Sys?,
-	/**
-	 *  Timezone
-	 */
-	val timezone: Int?,
-	/**
-	 *  Station id?
-	 */
-	val id: Long?,
-	/**
-	 *  Name?
-	 */
-	val name: String?,
-	/**
-	 *  Call of duty?
-	 */
-	val cod: Int?
+	val coord: Coord? = null,
+	val weather: List<Weather>? = null,
+	val base: String? = null,
+	val main: Main? = null,
+	val visibility: Int? = null,
+	val wind: Wind? = null,
+	val clouds: Clouds? = null,
+	val dt: Long? = null,
+	val sys: Sys? = null,
+	val timezone: Int? = null,
+	val id: Long? = null,
+	val name: String? = null,
+	val cod: Int? = null
 )
 
 /**
@@ -68,11 +43,11 @@ data class WeatherData(
  * @property city Details about the city for which the forecast is provided.
  */
 data class ForecastData(
-	val cod: String?,
-	val message: Int?,
-	val cnt: Int?,
-	val list: List<ForecastItem>?,
-	val city: City?
+	val cod: String? = null,
+	val message: Int? = null,
+	val cnt: Int? = null,
+	val list: List<ForecastItem>? = null,
+	val city: City? = null
 )
 
 /**
@@ -87,14 +62,14 @@ data class ForecastData(
  * @property sunset The timestamp of sunset in the city.
  */
 data class City(
-	val id: Int?,
-	val name: String?,
-	val coord: Coord?, // Fixed typo in property name
-	val country: String?,
-	val population: Int?,
-	val timezone: Int?,
-	val sunrise: Long?,
-	val sunset: Long?
+	val id: Int? = null,
+	val name: String? = null,
+	val coord: Coord? = null, // Fixed typo in property name
+	val country: String? = null,
+	val population: Int? = null,
+	val timezone: Int? = null,
+	val sunrise: Long? = null,
+	val sunset: Long? = null
 )
 
 /**
@@ -107,7 +82,7 @@ data class City(
  * @property visibility The visibility in meters.
  * @property pop Probability of precipitation.
  * @property sys Additional system information for the forecast.
- * @property dt_txt The timestamp in text format.
+ * @property dtTxt The timestamp in text format.
  */
 data class ForecastItem(
 	val dt: Long,
@@ -118,7 +93,7 @@ data class ForecastItem(
 	val visibility: Int?,
 	val pop: Float?,
 	val sys: SysForecast?,
-	val dt_txt: String,
+	@SerializedName("dt_txt") val dtTxt: String
 )
 
 /**
@@ -148,17 +123,17 @@ data class Weather(
 /**
  * Data class representing the attributes for the weather like temperature, pressure etc.
  * @property temp The temperature.
- * @property feels_like The "feels like" temperature.
- * @property temp_min The minimum temperature.
- * @property temp_max The maximum temperature.
+ * @property feelsLike The "feels like" temperature.
+ * @property tempMin The minimum temperature.
+ * @property tempMax The maximum temperature.
  * @property pressure The atmospheric pressure.
  * @property humidity The relative humidity.
  */
 data class Main(
 	val temp: Double?,
-	val feels_like: Double?,
-	val temp_min: Double?,
-	val temp_max: Double?,
+	@SerializedName("feels_like") val feelsLike: Double?,
+	@SerializedName("temp_min ") val tempMin: Double?,
+	@SerializedName("temp_max") val tempMax: Double?,
 	val pressure: Int?,
 	val humidity: Int?
 )
@@ -166,25 +141,25 @@ data class Main(
 /**
  * Data class representing the attributes for the weather forecast like temperature, pressure etc.
  * @property temp The temperature.
- * @property feels_like The "feels like" temperature.
- * @property temp_min The minimum temperature.
- * @property temp_max The maximum temperature.
+ * @property feelsLike The "feels like" temperature.
+ * @property tempMin The minimum temperature.
+ * @property tempMax The maximum temperature.
  * @property pressure The atmospheric pressure.
- * @property sea_level The sea-level atmospheric pressure.
- * @property grnd_level The ground-level atmospheric pressure.
+ * @property seaLevel The sea-level atmospheric pressure.
+ * @property groundLevel The ground-level atmospheric pressure.
  * @property humidity The relative humidity.
- * @property temp_kf The temperature in Kelvin.
+ * @property tempKF The temperature in Kelvin.
  */
 data class MainForecast(
 	val temp: Double?,
-	val feels_like: Double?,
-	val temp_min: Double?,
-	val temp_max: Double?,
+	val feelsLike: Double?,
+	@SerializedName("temp_min") val tempMin: Double?,
+	@SerializedName("temp_max") val tempMax: Double?,
 	val pressure: Int?,
-	val sea_level: Int?,
-	val grnd_level: Int?,
+	@SerializedName("sea_level") val seaLevel: Int?,
+	@SerializedName("grnd_level") val groundLevel: Int?,
 	val humidity: Int?,
-	val temp_kf: Double?,
+	@SerializedName("temp_kf") val tempKF: Double?
 )
 
 /**
@@ -228,5 +203,5 @@ data class Sys(
  * @property pod The pod value.
  */
 data class SysForecast(
-	val pod: String?,
+	val pod: String?
 )

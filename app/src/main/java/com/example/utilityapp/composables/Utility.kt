@@ -45,12 +45,7 @@ fun <T> LiveData<T>.observeAsState(initial: T): T {
  * @return Parsed [WeatherData] object.
  */
 fun parseJsonToWeatherData(jsonData: String): WeatherData {
-	// Parse JSON string to WeatherData object
-	// Example: Use a JSON parsing library like Kotlinx.serialization, Gson, or Moshi
-	// For simplicity, here's a direct parsing implementation for the provided JSON structure
-	val gson = Gson() // Using Gson for simple JSON parsing
-
-	return gson.fromJson(jsonData, WeatherData::class.java)
+	return Gson().fromJson(jsonData, WeatherData::class.java)
 }
 
 /**
@@ -60,13 +55,7 @@ fun parseJsonToWeatherData(jsonData: String): WeatherData {
  * @return Parsed [ForecastData] object.
  */
 fun parseJsonToForecastData(jsonData: String): ForecastData {
-	// Parse JSON string to WeatherData object
-	// Example: Use a JSON parsing library like Kotlinx.serialization, Gson, or Moshi
-	// For simplicity, here's a direct parsing implementation for the provided JSON structure
-	val gson = Gson() // Using Gson for simple JSON parsing
-	val forecastData: ForecastData = gson.fromJson(jsonData, ForecastData::class.java)
-	println(jsonData)
-	return forecastData
+	return Gson().fromJson(jsonData, ForecastData::class.java)
 }
 
 

@@ -27,10 +27,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
+import com.example.utilityapp.R
 import com.example.utilityapp.composables.observeAsState
 import com.example.utilityapp.data.Category
 import com.example.utilityapp.data.Note
@@ -65,25 +67,25 @@ fun NoteCreationScreen(
 	val focusManager = LocalFocusManager.current
 
 	Column(
-        Modifier
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = {
-                    focusManager.clearFocus()
-                })
-            }
-            .padding(16.dp)
+		Modifier
+			.pointerInput(Unit) {
+				detectTapGestures(onTap = {
+					focusManager.clearFocus()
+				})
+			}
+			.padding(16.dp)
 	) {
 		// Input fields for title, content, category, and reminder
 		TextField(
 			value = title,
 			onValueChange = { title = it },
-			label = { Text("Title") },
+			label = { Text(stringResource(R.string.title)) },
 			modifier = Modifier.fillMaxWidth()
 		)
 		TextField(
 			value = content,
 			onValueChange = { content = it },
-			label = { Text("Content") },
+			label = { Text(stringResource(R.string.content)) },
 			modifier = Modifier.fillMaxWidth()
 		)
 
@@ -99,12 +101,12 @@ fun NoteCreationScreen(
 		}
 		Row(Modifier.padding(5.dp)) {
 			Text(
-				text = "Category: ",
+				text = stringResource(R.string.category),
 				fontSize = 20.sp,
 				fontWeight = FontWeight.Bold,
 				modifier = Modifier
-                    .padding(vertical = 18.dp, horizontal = 2.dp)
-                    .align(Alignment.CenterVertically)
+					.padding(vertical = 18.dp, horizontal = 2.dp)
+					.align(Alignment.CenterVertically)
 
 			)
 			ExposedDropdownMenuBox(
@@ -113,8 +115,8 @@ fun NoteCreationScreen(
 					expandedCatDropdown = !expandedCatDropdown
 				},
 				modifier = Modifier
-                    .padding(vertical = 23.dp)
-                    .height(55.dp)
+					.padding(vertical = 23.dp)
+					.height(55.dp)
 			) {
 
 				TextField(
@@ -149,8 +151,8 @@ fun NoteCreationScreen(
 		// Save, cancel, and delete buttons
 		Row(
 			modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
+				.fillMaxWidth()
+				.padding(top = 16.dp),
 			horizontalArrangement = Arrangement.SpaceBetween
 		) {
 			Button(
@@ -171,9 +173,9 @@ fun NoteCreationScreen(
 				},
 			) {
 				if (note == null) {
-					Text("Create")
+					Text(stringResource(R.string.create))
 				} else {
-					Text("Save")
+					Text(stringResource(R.string.save))
 				}
 			}
 
@@ -182,7 +184,7 @@ fun NoteCreationScreen(
 				onClick = onCancel,
 				colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant)
 			) {
-				Text("Cancel", color = Color.White)
+				Text(stringResource(R.string.cancel), color = Color.White)
 			}
 
 			// Delete button (show only if it's an existing note)s
@@ -193,7 +195,7 @@ fun NoteCreationScreen(
 					},
 					colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.error)
 				) {
-					Text("Delete")
+					Text(stringResource(R.string.delete))
 				}
 			}
 		}
